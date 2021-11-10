@@ -1,17 +1,11 @@
-import { Table, Thead, Tbody, Tr, Th, Td, Select } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, Input } from '@chakra-ui/react';
 
 //import { FirestoreService } from '../helpers/FirestoreService';
 
 export default function Lista({ estudios }) {
-  //const db = FirestoreService();
-
   return (
     <>
-      <Select placeholder="Fecha">
-        <option value="option1">8 de noviembre del 2021</option>
-        <option value="option2">Option 2</option>
-        <option value="option3">Option 3</option>
-      </Select>
+      <Input type="date" />
       <Table size="sm">
         <Thead>
           <Tr>
