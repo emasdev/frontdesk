@@ -33,26 +33,37 @@ export default function Main() {
   const [estudios, setEstudios] = useState();
   const [doctores, setDoctores] = useState();
   const [usuarios, setUsuarios] = useState();
+  const [eventos, setEventos] = useState();
 
   useEffect(() => {
     const loadEstudios = () => {
       console.log('loadEstudios');
     };
 
-    const loadUsuarios = async () => {
-      try {
-        console.log('loadUsuarios');
-        const docs = await db.readDocuments('usuarios');
-        console.log(docs);
-        setUsuarios(docs);
-        console.log(usuarios);
-      } catch (error) {
-        alert(error.message);
-      }
-    };
-
     loadUsuarios();
+    loadEventos();
   }, []);
+
+  const loadUsuarios = async () => {
+    try {
+      console.log('loadUsuarios');
+      const docs = await db.readDocuments('usuarios');
+      setUsuarios(docs);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const loadEventos = async () => {
+    try {
+      console.log('loadEventos');
+      const docs = await db.readDocuments('eventos');
+      setEventos(docs);
+      console.log(docs);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const value = {
     estudios,
@@ -61,6 +72,10 @@ export default function Main() {
     setDoctores,
     usuarios,
     setUsuarios,
+    loadUsuarios,
+    eventos,
+    setEventos,
+    loadEventos,
   };
 
   return (

@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
+import AppContext from '../context/AppContext';
 
 export default function Agenda() {
+  const { eventos } = useContext(AppContext);
+
   const handleDateClick = arg => {
     // bind with an arrow function
     alert(`Agregar cita para el ${arg.dateStr}`);
@@ -14,7 +17,7 @@ export default function Agenda() {
   return (
     <FullCalendar
       plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
-      initialView="dayGridMonth"
+      initialView="timeGridWeek"
       dateClick={handleDateClick}
       headerToolbar={{
         start: 'title', // will normally be on the left. if RTL, will be on the right
@@ -23,6 +26,9 @@ export default function Agenda() {
       }}
       locale={esLocale}
       allDaySlot={false}
+      events={eventos}
+      slotMinTime="09:00:00"
+      slotMaxTime="19:00:00"
     />
   );
 }

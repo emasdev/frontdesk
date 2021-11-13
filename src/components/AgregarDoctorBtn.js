@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useRef } from 'react';
+import { useContext } from 'react';
 
 import {
   Drawer,
@@ -16,6 +16,7 @@ import {
   FormLabel,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   InputGroup,
   InputLeftAddon,
   Input,
@@ -24,9 +25,12 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 import FormValidationTexts from '../helpers/FormValidationTexts';
+import db from '../helpers/FirestoreService';
+import AppContext from '../context/AppContext';
 
 export default function AgregarDoctorBtn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { loadUsuarios } = useContext(AppContext);
   const {
     register,
     handleSubmit,
@@ -34,19 +38,22 @@ export default function AgregarDoctorBtn() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  function onSubmit(values) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        alert(JSON.stringify(values, null, 2));
-        resolve();
-      }, 1000);
-    });
-  }
+  const onSubmit = async values => {
+    const docData = {
+      nombre: values.nombre,
+      apellido_paterno: values.apellido_paterno,
+      apellido_materno: values.apellido_materno,
+      tel: values.tel,
+    };
+    const doc = await db.createDocument('usuarios', docData);
+    loadUsuarios();
+    onClose();
+  };
 
-  async function handleOpen() {
+  const handleOpen = async () => {
     await onOpen();
     setFocus('nombre');
-  }
+  };
 
   return (
     <>
@@ -75,26 +82,42 @@ export default function AgregarDoctorBtn() {
                   </FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={errors.name}>
+                <FormControl isInvalid={errors.apellido_paterno}>
                   <FormLabel>Apellido Paterno</FormLabel>
                   <Input
                     placeholder="Apellido Paterno"
-                    {...register('apellido_paterno')}
+                    {...register('apellido_paterno', {
+                      required: FormValidationTexts.requerido,
+                    })}
                   />
+                  <FormErrorMessage>
+                    {errors.apellido_paterno && errors.apellido_paterno.message}
+                  </FormErrorMessage>
                 </FormControl>
-                <FormControl isInvalid={errors.name}>
+                <FormControl isInvalid={errors.apellido_materno}>
                   <FormLabel>Apellido Materno</FormLabel>
                   <Input
                     placeholder="Apellido Materno"
                     {...register('apellido_materno')}
                   />
+                  <FormErrorMessage>
+                    {errors.apellido_materno && errors.apellido_materno.message}
+                  </FormErrorMessage>
                 </FormControl>
-                <FormControl isInvalid={errors.name}>
+                <FormControl isInvalid={errors.tel}>
                   <FormLabel>Teléfono</FormLabel>
                   <Input
                     placeholder="Teléfono a 10 digitos"
-                    {...register('tel')}
+                    {...register('tel', {
+                      required: FormValidationTexts.requerido,
+                    })}
                   />
+                  <FormHelperText>
+                    De preferencia usar un numero que cuente con WhatsApp.
+                  </FormHelperText>
+                  <FormErrorMessage>
+                    {errors.tel && errors.tel.message}
+                  </FormErrorMessage>
                 </FormControl>
               </Stack>
               <Button
