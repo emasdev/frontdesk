@@ -8,15 +8,15 @@ export default function Catalogos() {
     <Tabs>
       <TabList mb="1em">
         <Tab>Doctores</Tab>
-        <Tab>Usuarios IDM Cloud</Tab>
+        {/* <Tab>Usuarios IDM Cloud</Tab> */}
       </TabList>
       <TabPanels>
         <TabPanel>
           <Doctores />
         </TabPanel>
-        <TabPanel>
+        {/* <TabPanel>
           <Usuarios />
-        </TabPanel>
+        </TabPanel> */}
       </TabPanels>
     </Tabs>
   );

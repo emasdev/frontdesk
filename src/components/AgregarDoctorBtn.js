@@ -23,36 +23,35 @@ import {
   Select,
   Textarea,
 } from '@chakra-ui/react';
+import FormValidationTexts from '../helpers/FormValidationTexts';
 
 export default function AgregarDoctorBtn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
-    handleSubmit,
     register,
+    handleSubmit,
+    setFocus,
     formState: { errors, isSubmitting },
   } = useForm();
-
-  const firstField = useRef();
 
   function onSubmit(values) {
     return new Promise(resolve => {
       setTimeout(() => {
         alert(JSON.stringify(values, null, 2));
         resolve();
-      }, 3000);
+      }, 1000);
     });
+  }
+
+  async function handleOpen() {
+    await onOpen();
+    setFocus('nombre');
   }
 
   return (
     <>
-      <Button onClick={onOpen}>Agregar Doctor</Button>
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        initialFocusRef={firstField}
-        onClose={onClose}
-        size={'md'}
-      >
+      <Button onClick={handleOpen}>Agregar Doctor</Button>
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'md'}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
@@ -61,38 +60,53 @@ export default function AgregarDoctorBtn() {
           </DrawerHeader>
 
           <DrawerBody>
-            <Stack spacing="24px">
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <FormControl isInvalid={errors.name}>
-                  <FormLabel htmlFor="name">First name</FormLabel>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Stack spacing="24px">
+                <FormControl isInvalid={errors.nombre}>
+                  <FormLabel>Nombre</FormLabel>
                   <Input
-                    id="name"
-                    placeholder="name"
-                    ref={firstField}
-                    {...register('name', {
-                      required: 'This is required',
-                      minLength: {
-                        value: 4,
-                        message: 'Minimum length should be 4',
-                      },
+                    placeholder="Nombre de doctor"
+                    {...register('nombre', {
+                      required: FormValidationTexts.requerido,
                     })}
                   />
                   <FormErrorMessage>
-                    {errors.name && errors.name.message}
+                    {errors.nombre && errors.nombre.message}
                   </FormErrorMessage>
                 </FormControl>
-                <Button
-                  mt={4}
-                  colorScheme="teal"
-                  isLoading={isSubmitting}
-                  type="submit"
-                >
-                  Submit
-                </Button>
-              </form>
-            </Stack>
-          </DrawerBody>
 
+                <FormControl isInvalid={errors.name}>
+                  <FormLabel>Apellido Paterno</FormLabel>
+                  <Input
+                    placeholder="Apellido Paterno"
+                    {...register('apellido_paterno')}
+                  />
+                </FormControl>
+                <FormControl isInvalid={errors.name}>
+                  <FormLabel>Apellido Materno</FormLabel>
+                  <Input
+                    placeholder="Apellido Materno"
+                    {...register('apellido_materno')}
+                  />
+                </FormControl>
+                <FormControl isInvalid={errors.name}>
+                  <FormLabel>Teléfono</FormLabel>
+                  <Input
+                    placeholder="Teléfono a 10 digitos"
+                    {...register('tel')}
+                  />
+                </FormControl>
+              </Stack>
+              <Button
+                mt={8}
+                colorScheme="teal"
+                isLoading={isSubmitting}
+                type="submit"
+              >
+                Agregar
+              </Button>
+            </form>
+          </DrawerBody>
           <DrawerFooter borderTopWidth="1px">
             <Button variant="outline" mr={3} onClick={onClose}>
               Cancelar

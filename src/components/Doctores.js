@@ -13,42 +13,32 @@ import AgregarDoctorBtn from './AgregarDoctorBtn';
 import AppContext from '../context/AppContext';
 
 export default function Doctores() {
-  const { doctores } = useContext(AppContext);
+  const { usuarios } = useContext(AppContext);
   return (
     <>
       <AgregarDoctorBtn />
       <Table size="sm">
         <Thead>
           <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
+            <Th>Nombre</Th>
+            <Th>Apellidos</Th>
+            <Th>Teléfono</Th>
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>inches</Td>
-            <Td>millimetres (mm)</Td>
-            <Td isNumeric>25.4</Td>
-          </Tr>
-          <Tr>
-            <Td>feet</Td>
-            <Td>centimetres (cm)</Td>
-            <Td isNumeric>30.48</Td>
-          </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td isNumeric>0.91444</Td>
-          </Tr>
+          {usuarios &&
+            usuarios.map(usuario => {
+              return (
+                <Tr key={usuario.id}>
+                  <Td>{usuario.nombre}</Td>
+                  <Td>
+                    {usuario.apellido_paterno} {usuario.apellido_materno}
+                  </Td>
+                  <Td>{usuario.tel}</Td>
+                </Tr>
+              );
+            })}
         </Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
-          </Tr>
-        </Tfoot>
       </Table>
     </>
   );
