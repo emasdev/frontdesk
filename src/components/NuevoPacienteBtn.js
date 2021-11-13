@@ -21,24 +21,25 @@ import {
   Textarea,
 } from '@chakra-ui/react';
 
-export default function AgregarPacienteButton() {
+export default function NuevoPacienteBtn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const firstField = useRef();
 
   return (
     <>
-      <Button onClick={onOpen}>Agregar paciente</Button>
+      <Button onClick={onOpen}>Nuevo paciente</Button>
       <Drawer
         isOpen={isOpen}
         placement="right"
         initialFocusRef={firstField}
         onClose={onClose}
+        size={'md'}
       >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader borderBottomWidth="1px">
-            Agregar nuevo paciente
+            Agendar cita para paciente en el mostrador
           </DrawerHeader>
 
           <DrawerBody>

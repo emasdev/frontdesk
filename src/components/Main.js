@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   IconButton,
   Box,
@@ -17,6 +17,9 @@ import { useAuth } from '../hooks/useAuth';
 import Dashboard from './Dashboard';
 import Agenda from './Agenda';
 import Catalogos from './Catalogos';
+import NavContext from '../context/NavContext';
+import AppContext from '../context/AppContext';
+import db from '../helpers/FirestoreService';
 
 const LinkItems = [
   { name: 'Dashboard', icon: FiHome },
@@ -24,38 +27,70 @@ const LinkItems = [
   { name: 'Catalogos', icon: FiUsers },
 ];
 
-const NavContext = createContext();
-
 export default function Main() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [section, setSection] = useState('Dashboard');
+  const [estudios, setEstudios] = useState();
+  const [doctores, setDoctores] = useState();
+  const [usuarios, setUsuarios] = useState();
+
+  useEffect(() => {
+    const loadEstudios = () => {
+      console.log('loadEstudios');
+    };
+
+    const loadUsuarios = async () => {
+      try {
+        console.log('loadUsuarios');
+        const docs = await db.readDocuments('usuarios');
+        console.log(docs);
+        setUsuarios(docs);
+        console.log(usuarios);
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    loadUsuarios();
+  }, []);
+
+  const value = {
+    estudios,
+    setEstudios,
+    doctores,
+    setDoctores,
+    usuarios,
+    setUsuarios,
+  };
 
   return (
     <NavContext.Provider value={{ section, setSection }}>
-      <Box minH="100vh">
-        <SidebarContent
-          onClose={() => onClose}
-          display={{ base: 'none', md: 'block' }}
-        />
-        <Drawer
-          autoFocus={false}
-          isOpen={isOpen}
-          placement="left"
-          onClose={onClose}
-          returnFocusOnClose={false}
-          onOverlayClick={onClose}
-          size="full"
-        >
-          <DrawerContent>
-            <SidebarContent onClose={onClose} />
-          </DrawerContent>
-        </Drawer>
-        {/* mobilenav */}
-        <MobileNav display={{ base: 'flex', md: 'none' }} onOpen={onOpen} />
-        <Box ml={{ base: 0, md: 60 }} p="4">
-          <Content />
+      <AppContext.Provider value={value}>
+        <Box minH="100vh">
+          <SidebarContent
+            onClose={() => onClose}
+            display={{ base: 'none', md: 'block' }}
+          />
+          <Drawer
+            autoFocus={false}
+            isOpen={isOpen}
+            placement="left"
+            onClose={onClose}
+            returnFocusOnClose={false}
+            onOverlayClick={onClose}
+            size="full"
+          >
+            <DrawerContent>
+              <SidebarContent onClose={onClose} />
+            </DrawerContent>
+          </Drawer>
+          {/* mobilenav */}
+          <MobileNav display={{ base: 'flex', md: 'none' }} onOpen={onOpen} />
+          <Box ml={{ base: 0, md: 60 }} p="4">
+            <Content />
+          </Box>
         </Box>
-      </Box>
+      </AppContext.Provider>
     </NavContext.Provider>
   );
 }

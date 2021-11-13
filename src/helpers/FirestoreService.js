@@ -1,9 +1,5 @@
 import firebase from '../firebase/config';
-import {
-  getDocs,
-  collection,
-  addDoc,
-} from 'firebase/firestore';
+import { getDocs, collection, addDoc } from 'firebase/firestore';
 
 const db = firebase.db;
 
@@ -18,6 +14,7 @@ const readDocuments = async collectionName => {
     querySnapshot.forEach(doc => {
       data.push({ ...doc.data(), id: doc.id });
     });
+    console.log(data);
 
     return data;
   } catch (error) {
@@ -28,8 +25,6 @@ const readDocuments = async collectionName => {
 const FirestoreService = {
   createDocument,
   readDocuments,
-
 };
 
 export default FirestoreService;
-

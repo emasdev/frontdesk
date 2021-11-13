@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import Lista from './Lista';
 import { Box } from '@chakra-ui/react';
-import AgregarPacienteButton from './AgregarPacienteButton';
+import NuevoPacienteBtn from './NuevoPacienteBtn';
 
 export default function Dashboard() {
   return (
     <Box>
-      <AgregarPacienteButton />
+      <NuevoPacienteBtn />
       <Lista />
     </Box>
   );
