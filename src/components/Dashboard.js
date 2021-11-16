@@ -1,14 +1,24 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import Lista from './Lista';
-import { Box } from '@chakra-ui/react';
+import { Box, Button, Flex, Stack } from '@chakra-ui/react';
 import NuevoPacienteBtn from './NuevoPacienteBtn';
 import Eventos from './Eventos';
+import NavContext from '../context/NavContext';
 
 export default function Dashboard() {
   return (
     <Box>
-      <NuevoPacienteBtn />
+      <Stack direction="row">
+        <NuevoPacienteBtn />
+        <AgendarPacienteBtn />
+      </Stack>
+
       <Eventos />
     </Box>
   );
+}
+
+function AgendarPacienteBtn({ onClick }) {
+  const { setSection } = useContext(NavContext);
+  return <Button onClick={() => setSection('Agenda')}>Agendar Paciente</Button>;
 }

@@ -36,7 +36,7 @@ import db from '../helpers/FirestoreService';
 import AppContext from '../context/AppContext';
 import AgregarDoctorBtn from './AgregarDoctorBtn';
 
-export default function NuevoPacienteBtn() {
+export default function AgendarBtn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { usuarios, loadEventos } = useContext(AppContext);
   const {
@@ -73,7 +73,7 @@ export default function NuevoPacienteBtn() {
 
   return (
     <>
-      <Button onClick={handleOpen}>Nuevo Paciente</Button>
+      <Button onClick={handleOpen}>Agendar ahora</Button>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'md'}>
         <DrawerOverlay />
         <DrawerContent>

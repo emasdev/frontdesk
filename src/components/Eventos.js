@@ -24,7 +24,7 @@ export default function Eventos() {
               console.log(evento);
               return (
                 <Tr key={evento.id}>
-                  <Td>{moment(evento.start).format('hh:mm')}</Td>
+                  <Td>{moment(evento.start).format('HH:mm')}</Td>
                   <Td>
                     {evento.extendedProps.nombre}{' '}
                     {evento.extendedProps.apellidos}
