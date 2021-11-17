@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Flex, Text, Button, Heading, Center } from '@chakra-ui/react';
 import { Step, Steps, useSteps } from 'chakra-ui-steps';
 import AgendarPaciente from './Forms/AgendarPaciente';
@@ -6,6 +6,8 @@ import AgendarDoctor from './Forms/AgendarDoctor';
 import AgendaContext from '../context/AgendaContext';
 import AgendarEstudios from './Forms/AgendarEstudios';
 import AgendarHorario from './Forms/AgendarHorario';
+import AppContext from '../context/AppContext';
+import db from '../helpers/FirestoreService';
 
 const steps = [
   { label: 'Paciente', content: <AgendarPaciente /> },
@@ -14,10 +16,11 @@ const steps = [
   { label: 'Horario' },
 ];
 
-export const Vertical = () => {
+export const AgendaSteps = ({ isDone }) => {
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
   });
+  const { loadEventos } = useContext(AppContext);
 
   const [paciente, setPaciente] = useState(null);
   const [doctor, setDoctor] = useState(null);
@@ -38,6 +41,22 @@ export const Vertical = () => {
     setEstudios,
     horario,
     setHorario,
+  };
+
+  const onSubmit = async () => {
+    const docData = {
+      title: paciente.nombre + ' ' + paciente.apellidos,
+      start: horario.start,
+      end: horario.end,
+      extendedProps: {
+        nombre: paciente.nombre,
+        apellidos: paciente.apellidos,
+        doctor: doctor,
+      },
+    };
+    const doc = await db.createDocument('eventos', docData);
+    loadEventos();
+    isDone();
   };
 
   return (
@@ -73,11 +92,11 @@ export const Vertical = () => {
       {activeStep === 4 && (
         <>
           <Button onClick={prevStep}>Regresar</Button>
-          <Button>Agendar cita</Button>
+          <Button onClick={onSubmit}>Agendar cita</Button>
         </>
       )}
     </AgendaContext.Provider>
   );
 };
 
-export default Vertical;
+export default AgendaSteps;

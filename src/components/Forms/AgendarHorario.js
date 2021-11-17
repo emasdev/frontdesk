@@ -23,9 +23,10 @@ import {
 } from '@chakra-ui/react';
 import FormValidationTexts from '../../helpers/FormValidationTexts';
 import AgendaContext from '../../context/AgendaContext';
+import moment from 'moment';
 
 export default function AgendarHorario() {
-  const { nextStep, prevStep, activeStep, setPaciente } =
+  const { nextStep, prevStep, activeStep, setHorario } =
     useContext(AgendaContext);
   const {
     register,
@@ -36,12 +37,12 @@ export default function AgendarHorario() {
 
   const onSubmit = async values => {
     console.log(values);
-    const paciente = {
-      nombre: values.nombre,
-      apellidos: values.apellidos,
+    const horario = {
+      start: moment().format(),
+      end: moment().add(parseInt(values.duracion_cita), 'minutes').format(),
     };
 
-    setPaciente(paciente);
+    setHorario(horario);
     nextStep();
   };
   return (

@@ -85,7 +85,7 @@ export default function NuevoPacienteBtn() {
           </DrawerHeader>
 
           <DrawerBody>
-            <AgendaSteps />
+            <AgendaSteps isDone={onClose} />
           </DrawerBody>
           <DrawerFooter borderTopWidth="1px">
             <Button variant="outline" mr={3} onClick={onClose}>
