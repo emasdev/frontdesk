@@ -1,8 +1,10 @@
 import { Table, Thead, Tbody, Tr, Th, Td, Input } from '@chakra-ui/react';
+import AppContext from '../context/AppContext';
+import { useContext } from 'react';
 
 //import { FirestoreService } from '../helpers/FirestoreService';
 
-export default function Lista({ estudios }) {
+export default function Lista() {
   return (
     <>
       <Input type="date" />

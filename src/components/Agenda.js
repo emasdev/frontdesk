@@ -24,9 +24,6 @@ export default function Agenda() {
     };
     setEventoSeleccionado(evento);
     onOpen();
-
-    // bind with an arrow function
-    alert(`Agregar cita para el ${arg.dateStr}`);
   };
 
   return (

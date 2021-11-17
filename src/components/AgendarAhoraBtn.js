@@ -13,23 +13,15 @@ import {
   useDisclosure,
   Button,
   Stack,
-  Box,
   FormLabel,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
-  InputGroup,
-  InputLeftAddon,
   Input,
-  InputRightAddon,
-  Select,
-  Textarea,
   RadioGroup,
-  HStack,
-  Radio,
   Text,
   Flex,
   Switch,
+  Select,
 } from '@chakra-ui/react';
 import FormValidationTexts from '../helpers/FormValidationTexts';
 import db from '../helpers/FirestoreService';
@@ -88,7 +80,7 @@ export default function AgendarBtn() {
                 <FormControl isInvalid={errors.nombre}>
                   <FormLabel>Nombre</FormLabel>
                   <Input
-                    placeholder="Nombre de doctor"
+                    placeholder="Nombre de paciente"
                     {...register('nombre', {
                       required: FormValidationTexts.requerido,
                     })}

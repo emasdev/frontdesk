@@ -26,6 +26,7 @@ import AgregarDoctorBtn from './AgregarDoctorBtn';
 import FormValidationTexts from '../helpers/FormValidationTexts';
 import AppContext from '../context/AppContext';
 import db from '../helpers/FirestoreService';
+import AgendaMenu from './AgendaMenu';
 
 export default function AgendaDrawer({ isOpen, onClose, evento }) {
   moment.locale('es');
