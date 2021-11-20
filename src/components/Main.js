@@ -21,7 +21,7 @@ import {
   FiDollarSign,
 } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
-import Dashboard from './Dashboard';
+import Inicio from './Inicio';
 import Agenda from './Agenda';
 import Catalogos from './Catalogos';
 import NavContext from '../context/NavContext';
@@ -37,7 +37,7 @@ const LinkItems = [
 
 export default function Main() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [section, setSection] = useState('Dashboard');
+  const [section, setSection] = useState('Inicio');
   const [estudios, setEstudios] = useState();
   const [doctores, setDoctores] = useState();
   const [usuarios, setUsuarios] = useState();
@@ -125,8 +125,8 @@ export default function Main() {
 const Content = () => {
   const { section } = useContext(NavContext);
   switch (section) {
-    case 'Dashboard':
-      return <Dashboard />;
+    case 'Inicio':
+      return <Inicio />;
 
     case 'Agenda':
       return <Agenda />;

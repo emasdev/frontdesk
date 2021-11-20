@@ -75,7 +75,7 @@ export default function NuevoPacienteBtn() {
 
   return (
     <>
-      <Button onClick={handleOpen}>Agendar Paciente</Button>
+      <Button onClick={handleOpen}>Registrar Paciente</Button>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'md'}>
         <DrawerOverlay />
         <DrawerContent>

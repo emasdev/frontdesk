@@ -14,7 +14,8 @@ import AppContext from '../context/AppContext';
 
 export default function Doctores() {
   const { catalogo } = useContext(AppContext);
-  const { estudios } = catalogo;
+  const { estudios, listas_precios } = catalogo;
+  console.log(catalogo);
 
   return (
     <>
@@ -23,23 +24,25 @@ export default function Doctores() {
         <Thead>
           <Tr>
             <Th>Estudio</Th>
-            {/* <Th>Duración</Th> */}
-            {/* <Th>Teléfono</Th> */}
+            {listas_precios &&
+              listas_precios.map(lista => {
+                console.log(lista);
+                return <Th key={lista.id}>{lista.titulo}</Th>;
+              })}
           </Tr>
         </Thead>
         <Tbody>
           {estudios &&
             estudios.map(estudio => {
               console.log(estudio);
-              // return (
-              //   <Tr key={catalogo.id}>
-              //     <Td>{usuario.nombre}</Td>
-              //     <Td>
-              //       {usuario.apellido_paterno} {usuario.apellido_materno}
-              //     </Td>
-              //     <Td>{usuario.tel}</Td>
-              //   </Tr>
-              // );
+              return (
+                <Tr key={estudio.id}>
+                  <Td>{estudio.nombre}</Td>
+                  {estudio.precios.map(precio => {
+                    return <Td>{precio.precio}</Td>;
+                  })}
+                </Tr>
+              );
             })}
         </Tbody>
       </Table>

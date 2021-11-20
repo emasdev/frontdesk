@@ -5,7 +5,7 @@ import NuevoPacienteBtn from './NuevoPacienteBtn';
 import Eventos from './Eventos';
 import NavContext from '../context/NavContext';
 
-export default function Dashboard() {
+export default function Inicio() {
   return (
     <Box>
       <Stack direction="row">
@@ -20,5 +20,5 @@ export default function Dashboard() {
 
 function AgendarPacienteBtn({ onClick }) {
   const { setSection } = useContext(NavContext);
-  return <Button onClick={() => setSection('Agenda')}>Agendar Paciente</Button>;
+  return <Button onClick={() => setSection('Agenda')}>Agendar cita</Button>;
 }

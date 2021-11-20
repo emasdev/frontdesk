@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
+import useDynamicRefs from 'use-dynamic-refs';
 
 import {
   Drawer,
@@ -43,13 +44,14 @@ import {
 import FormValidationTexts from '../helpers/FormValidationTexts';
 import db from '../helpers/FirestoreService';
 import AppContext from '../context/AppContext';
-import AgregarCategoriaBtn from './AgregarCategoriaBtn';
+// import AgregarCategoriaBtn from './AgregarCategoriaBtn';
 import AgregarListaPreciosBtn from './AgregarListaPreciosBtn';
 
 export default function AgregarEstudioBtn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { catalogo } = useContext(AppContext);
-  const { categorias, listas_precios } = catalogo;
+  const { listas_precios } = catalogo;
+  const [getRef, setRef] = useDynamicRefs();
   const {
     register,
     handleSubmit,
@@ -59,6 +61,25 @@ export default function AgregarEstudioBtn() {
 
   const onSubmit = async values => {
     console.log(values);
+    const precios = [];
+    listas_precios.forEach(lista_precios => {
+      const inputVal = getRef(lista_precios.id).current.value;
+      const precio = {
+        lista_precios: lista_precios.id,
+        precio: inputVal,
+      };
+      precios.push(precio);
+    });
+
+    const estudio = {
+      nombre: values.nombre,
+      precios: precios,
+    };
+
+    const _catalogo = { ...catalogo };
+    _catalogo.estudios.push(estudio);
+
+    onClose();
   };
 
   const handleOpen = async () => {
@@ -107,31 +128,6 @@ export default function AgregarEstudioBtn() {
                   </FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={errors.categoria}>
-                  <FormLabel>Seleccionar Categoria</FormLabel>
-                  <Select
-                    {...register('categoria', {
-                      required: FormValidationTexts.requerido,
-                    })}
-                  >
-                    {categorias &&
-                      categorias.map(categoria => {
-                        const value = JSON.stringify(categoria);
-                        return (
-                          <option value={value} key={categoria.id}>
-                            {categoria.titulo}
-                          </option>
-                        );
-                      })}
-                  </Select>
-                  <Flex justifyContent="end" mt={2}>
-                    <AgregarCategoriaBtn />
-                  </Flex>
-
-                  <FormErrorMessage>
-                    {errors.doctor && errors.doctor.message}
-                  </FormErrorMessage>
-                </FormControl>
                 <FormControl isInvalid={errors.precios}>
                   <FormLabel>Precios</FormLabel>
                   <Table variant="simple">
@@ -147,16 +143,13 @@ export default function AgregarEstudioBtn() {
                         listas_precios.map(lista_precios => {
                           const value = JSON.stringify(lista_precios);
                           return (
-                            <Tr>
+                            <Tr key={lista_precios.id}>
                               <Td>{lista_precios.titulo}</Td>
                               <Td>
-                                <NumberInput>
-                                  <NumberInputField />
-                                  <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                  </NumberInputStepper>
-                                </NumberInput>
+                                <Input
+                                  placeholder="$0.00"
+                                  ref={setRef(lista_precios.id)}
+                                />
                               </Td>
                             </Tr>
                           );

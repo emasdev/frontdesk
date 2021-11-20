@@ -25,6 +25,8 @@
     "react-icons": "^3.11.0",
     "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
+    "use-dynamic-refs": "^1.0.0",
+    "uuid": "^8.3.2",
     "web-vitals": "^0.2.2"
   },
   "scripts": {
