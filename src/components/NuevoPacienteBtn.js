@@ -75,14 +75,12 @@ export default function NuevoPacienteBtn() {
 
   return (
     <>
-      <Button onClick={handleOpen}>Nuevo Paciente</Button>
+      <Button onClick={handleOpen}>Agendar Paciente</Button>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'md'}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">
-            Agendar cita para paciente en mostrador
-          </DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Nuevo Paciente</DrawerHeader>
 
           <DrawerBody>
             <AgendaSteps isDone={onClose} />

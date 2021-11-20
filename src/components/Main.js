@@ -12,7 +12,14 @@ import {
   useDisclosure,
   Button,
 } from '@chakra-ui/react';
-import { FiCalendar, FiHome, FiMenu, FiUsers, FiLogOut } from 'react-icons/fi';
+import {
+  FiCalendar,
+  FiHome,
+  FiMenu,
+  FiUsers,
+  FiLogOut,
+  FiDollarSign,
+} from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
 import Dashboard from './Dashboard';
 import Agenda from './Agenda';
@@ -22,9 +29,10 @@ import AppContext from '../context/AppContext';
 import db from '../helpers/FirestoreService';
 
 const LinkItems = [
-  { name: 'Dashboard', icon: FiHome },
+  { name: 'Inicio', icon: FiHome },
   { name: 'Agenda', icon: FiCalendar },
   { name: 'Catalogos', icon: FiUsers },
+  { name: 'Caja', icon: FiDollarSign },
 ];
 
 export default function Main() {
@@ -35,13 +43,15 @@ export default function Main() {
   const [usuarios, setUsuarios] = useState();
   const [eventos, setEventos] = useState();
 
-  useEffect(() => {
-    const loadEstudios = () => {
-      console.log('loadEstudios');
-    };
+  const [catalogo, setCatalogo] = useState({
+    estudios: [],
+    categorias: [],
+    listas_precios: [],
+  });
 
-    loadUsuarios();
-    loadEventos();
+  useEffect(() => {
+    //loadUsuarios();
+    //loadEventos();
   }, []);
 
   const loadUsuarios = async () => {
@@ -76,6 +86,8 @@ export default function Main() {
     eventos,
     setEventos,
     loadEventos,
+    catalogo,
+    setCatalogo,
   };
 
   return (

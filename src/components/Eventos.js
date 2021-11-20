@@ -21,7 +21,6 @@ export default function Eventos() {
         <Tbody>
           {eventos &&
             eventos.map(evento => {
-              console.log(evento);
               return (
                 <Tr key={evento.id}>
                   <Td>{moment(evento.start).format('HH:mm')}</Td>
