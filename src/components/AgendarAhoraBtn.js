@@ -21,8 +21,8 @@ import {
   Text,
   Flex,
   Switch,
-  Select,
 } from '@chakra-ui/react';
+import Select from 'react-select';
 import FormValidationTexts from '../helpers/FormValidationTexts';
 import db from '../helpers/FirestoreService';
 import AppContext from '../context/AppContext';
@@ -30,7 +30,7 @@ import AgregarDoctorBtn from './AgregarDoctorBtn';
 
 export default function AgendarBtn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { usuarios, loadEventos } = useContext(AppContext);
+  const { usuarios, loadEventos, catalogo } = useContext(AppContext);
   const {
     register,
     handleSubmit,
@@ -38,7 +38,7 @@ export default function AgendarBtn() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  console.log(errors);
+  //console.log(errors);
 
   // const [duracionCita, setDuracionCita] = useState();
 
@@ -63,6 +63,22 @@ export default function AgendarBtn() {
     setFocus('nombre');
   };
 
+  const doctorOptions = usuarios.map(usuario => {
+    return {
+      value: JSON.stringify(usuario),
+      label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
+    };
+  });
+
+  const estudioOptions = catalogo.estudios.map(estudio => {
+    return {
+      value: JSON.stringify(estudio),
+      label: `${estudio.nombre}`,
+    };
+  });
+
+  //debugger;
+
   return (
     <>
       <Button onClick={handleOpen}>Agendar ahora</Button>
@@ -71,7 +87,7 @@ export default function AgendarBtn() {
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader borderBottomWidth="1px">
-            Agendar cita para paciente en mostrador
+            Registrar nuevo paciente
           </DrawerHeader>
 
           <DrawerBody>
@@ -153,7 +169,27 @@ export default function AgendarBtn() {
                     {errors.duracion_cita && errors.duracion_cita.message}
                   </FormErrorMessage>
                 </FormControl>
-                <FormControl isInvalid={errors.doctor}>
+                <FormControl>
+                  <FormLabel>Seleccionar Doctor</FormLabel>
+                  <Select
+                    options={doctorOptions}
+                    isClearable={true}
+                    isSearchable={true}
+                    placeholder="Seleccionar Doctor"
+                  />
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>Seleccionar Estudio</FormLabel>
+                  <Select
+                    options={estudioOptions}
+                    isClearable={true}
+                    isSearchable={true}
+                    placeholder="Seleccionar Estudio"
+                  />
+                </FormControl>
+
+                {/* <FormControl isInvalid={errors.doctor}>
                   <FormLabel>Seleccionar Doctor</FormLabel>
                   <Select
                     placeholder="Seleccionar Doctor"
@@ -184,7 +220,7 @@ export default function AgendarBtn() {
                   <FormErrorMessage>
                     {errors.doctor && errors.doctor.message}
                   </FormErrorMessage>
-                </FormControl>
+                </FormControl> */}
               </Stack>
               <Button
                 mt={8}

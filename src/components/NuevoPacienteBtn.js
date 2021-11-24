@@ -48,7 +48,7 @@ export default function NuevoPacienteBtn() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  console.log(errors);
+  //console.log(errors);
 
   // const [duracionCita, setDuracionCita] = useState();
 

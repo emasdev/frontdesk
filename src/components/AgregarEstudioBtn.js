@@ -49,7 +49,7 @@ import AgregarListaPreciosBtn from './AgregarListaPreciosBtn';
 
 export default function AgregarEstudioBtn() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { catalogo } = useContext(AppContext);
+  const { catalogo, loadCatalogo } = useContext(AppContext);
   const { listas_precios } = catalogo;
   const [getRef, setRef] = useDynamicRefs();
   const {
@@ -78,6 +78,9 @@ export default function AgregarEstudioBtn() {
 
     const _catalogo = { ...catalogo };
     _catalogo.estudios.push(estudio);
+    //setCatalogo(_catalogo);
+    const doc = await db.createDocumentAs('catalogo', 'idm', _catalogo);
+    loadCatalogo();
 
     onClose();
   };

@@ -45,13 +45,13 @@ export default function Main() {
 
   const [catalogo, setCatalogo] = useState({
     estudios: [],
-    categorias: [],
     listas_precios: [],
   });
 
   useEffect(() => {
-    //loadUsuarios();
-    //loadEventos();
+    loadUsuarios();
+    loadEventos();
+    loadCatalogo();
   }, []);
 
   const loadUsuarios = async () => {
@@ -59,6 +59,18 @@ export default function Main() {
       console.log('loadUsuarios');
       const docs = await db.readDocuments('usuarios');
       setUsuarios(docs);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const loadCatalogo = async () => {
+    try {
+      console.log('loadCatalogo');
+      const doc = await db.readDocument('catalogo', 'idm');
+      if (doc) {
+        setCatalogo(doc);
+      }
     } catch (error) {
       alert(error.message);
     }
@@ -88,6 +100,7 @@ export default function Main() {
     loadEventos,
     catalogo,
     setCatalogo,
+    loadCatalogo,
   };
 
   return (

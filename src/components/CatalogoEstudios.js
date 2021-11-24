@@ -12,11 +12,11 @@ import {
 import AgregarEstudioBtn from './AgregarEstudioBtn';
 import AppContext from '../context/AppContext';
 
-export default function Doctores() {
+export default function CatalogoEstudios() {
   const { catalogo } = useContext(AppContext);
   const { estudios, listas_precios } = catalogo;
-  console.log(catalogo);
 
+  console.log(catalogo);
   return (
     <>
       <AgregarEstudioBtn />
@@ -26,7 +26,6 @@ export default function Doctores() {
             <Th>Estudio</Th>
             {listas_precios &&
               listas_precios.map(lista => {
-                console.log(lista);
                 return <Th key={lista.id}>{lista.titulo}</Th>;
               })}
           </Tr>
@@ -34,12 +33,11 @@ export default function Doctores() {
         <Tbody>
           {estudios &&
             estudios.map(estudio => {
-              console.log(estudio);
               return (
-                <Tr key={estudio.id}>
+                <Tr key={estudio.nombre}>
                   <Td>{estudio.nombre}</Td>
                   {estudio.precios.map(precio => {
-                    return <Td>{precio.precio}</Td>;
+                    return <Td key={precio.lista_precios}>{precio.precio}</Td>;
                   })}
                 </Tr>
               );
