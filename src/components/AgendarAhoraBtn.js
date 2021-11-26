@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useContext, useState } from 'react';
+import { useContext, useState, useRef } from 'react';
 import moment from 'moment';
 
 import {
@@ -35,14 +35,42 @@ export default function AgendarBtn() {
     register,
     handleSubmit,
     setFocus,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm();
+
+  const [isSelectDoctorDisabled, setIsSelectDoctorDisabled] = useState(false);
+  const [selectDoctor, setSelectDoctor] = useState(null);
+  const [selectEstudios, setSelectEstudios] = useState(null);
 
   //console.log(errors);
 
   // const [duracionCita, setDuracionCita] = useState();
 
   const onSubmit = async values => {
+    let isValid = true;
+    if (!selectDoctor && !isSelectDoctorDisabled) {
+      setError('doctor', {
+        type: 'manual',
+        message: FormErrorMessage.requerido,
+      });
+      isValid = false;
+    }
+
+    if (!selectEstudios) {
+      setError('estudios', {
+        type: 'manual',
+        message: FormErrorMessage.requerido,
+      });
+      isValid = false;
+    }
+
+    if (!isValid) {
+      return;
+    }
+
+    const doctor = !isSelectDoctorDisabled ? selectDoctor : null;
+
     const docData = {
       title: values.nombre + ' ' + values.apellidos,
       start: moment().format(),
@@ -50,12 +78,13 @@ export default function AgendarBtn() {
       extendedProps: {
         nombre: values.nombre,
         apellidos: values.apellidos,
-        doctor: JSON.parse(values.doctor),
+        doctor: doctor,
+        estudios: selectEstudios,
       },
     };
     const doc = await db.createDocument('eventos', docData);
     loadEventos();
-    // onClose();
+    onClose();
   };
 
   const handleOpen = async () => {
@@ -63,12 +92,15 @@ export default function AgendarBtn() {
     setFocus('nombre');
   };
 
-  const doctorOptions = usuarios.map(usuario => {
-    return {
-      value: JSON.stringify(usuario),
-      label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
-    };
-  });
+  const doctorOptions = [];
+  if (usuarios) {
+    usuarios.map(usuario => {
+      return {
+        value: JSON.stringify(usuario),
+        label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
+      };
+    });
+  }
 
   const estudioOptions = catalogo.estudios.map(estudio => {
     return {
@@ -76,6 +108,23 @@ export default function AgendarBtn() {
       label: `${estudio.nombre}`,
     };
   });
+
+  const handleIsSinDoctor = e => {
+    setIsSelectDoctorDisabled(e.target.checked);
+  };
+
+  const handleSelectDoctor = e => {
+    e ? setSelectDoctor(JSON.parse(e.value)) : setSelectDoctor(null);
+  };
+
+  const handleSelectEstudios = e => {
+    const estudios = [];
+    e.map(estudio => {
+      estudios.push(JSON.parse(estudio.value));
+    });
+
+    setSelectEstudios(estudios);
+  };
 
   //debugger;
 
@@ -169,24 +218,42 @@ export default function AgendarBtn() {
                     {errors.duracion_cita && errors.duracion_cita.message}
                   </FormErrorMessage>
                 </FormControl>
-                <FormControl>
+                <FormControl isInvalid={errors.doctor}>
                   <FormLabel>Seleccionar Doctor</FormLabel>
                   <Select
                     options={doctorOptions}
                     isClearable={true}
                     isSearchable={true}
                     placeholder="Seleccionar Doctor"
+                    isDisabled={isSelectDoctorDisabled}
+                    onChange={handleSelectDoctor}
                   />
+
+                  <Flex mt={2}>
+                    <FormControl display="flex" alignItems="center">
+                      <FormLabel mb="0">Sin Doctor</FormLabel>
+                      <Switch onChange={handleIsSinDoctor} />
+                    </FormControl>
+                    <AgregarDoctorBtn />
+                  </Flex>
+                  <FormErrorMessage>
+                    {errors.doctor && errors.doctor.message}
+                  </FormErrorMessage>
                 </FormControl>
 
-                <FormControl>
-                  <FormLabel>Seleccionar Estudio</FormLabel>
+                <FormControl isInvalid={errors.estudios}>
+                  <FormLabel>Seleccionar Estudios</FormLabel>
                   <Select
                     options={estudioOptions}
+                    isMulti
                     isClearable={true}
                     isSearchable={true}
                     placeholder="Seleccionar Estudio"
+                    onChange={handleSelectEstudios}
                   />
+                  <FormErrorMessage>
+                    {errors.estudios && errors.estudios.message}
+                  </FormErrorMessage>
                 </FormControl>
 
                 {/* <FormControl isInvalid={errors.doctor}>

@@ -32,7 +32,7 @@ export default function Agenda() {
       <Text>Para agendar una cita seleccione un horario</Text>
       <FullCalendar
         plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
-        initialView="timeGridWeek"
+        initialView="timeGridDay"
         dateClick={handleDateClick}
         headerToolbar={{
           start: 'title', // will normally be on the left. if RTL, will be on the right

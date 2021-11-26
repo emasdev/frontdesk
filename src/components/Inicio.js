@@ -4,15 +4,13 @@ import { Box, Button, Flex, Stack } from '@chakra-ui/react';
 import NuevoPacienteBtn from './NuevoPacienteBtn';
 import Eventos from './Eventos';
 import NavContext from '../context/NavContext';
+import AgendarAhoraBtn from './AgendarAhoraBtn';
 
 export default function Inicio() {
   return (
     <Box>
-      <Stack direction="row">
-        <NuevoPacienteBtn />
-        <AgendarPacienteBtn />
-      </Stack>
-
+      <Stack direction="row"></Stack>
+      <AgendarAhoraBtn />
       <Eventos />
     </Box>
   );

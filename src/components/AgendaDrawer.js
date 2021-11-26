@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Drawer,
   DrawerBody,
@@ -18,7 +18,6 @@ import {
   Text,
   Flex,
   Switch,
-  Select,
 } from '@chakra-ui/react';
 import moment from 'moment/min/moment-with-locales';
 import { useForm } from 'react-hook-form';
@@ -26,19 +25,47 @@ import AgregarDoctorBtn from './AgregarDoctorBtn';
 import FormValidationTexts from '../helpers/FormValidationTexts';
 import AppContext from '../context/AppContext';
 import db from '../helpers/FirestoreService';
+import Select from 'react-select';
 import AgendaMenu from './AgendaMenu';
 
 export default function AgendaDrawer({ isOpen, onClose, evento }) {
   moment.locale('es');
-  const { usuarios, loadEventos } = useContext(AppContext);
+  const { usuarios, loadEventos, catalogo } = useContext(AppContext);
+  const [isSelectDoctorDisabled, setIsSelectDoctorDisabled] = useState(false);
+  const [selectDoctor, setSelectDoctor] = useState(null);
+  const [selectEstudios, setSelectEstudios] = useState(null);
   const {
     register,
     handleSubmit,
     setFocus,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm();
 
   const onSubmit = async values => {
+    let isValid = true;
+    if (!selectDoctor && !isSelectDoctorDisabled) {
+      setError('doctor', {
+        type: 'manual',
+        message: FormErrorMessage.requerido,
+      });
+      isValid = false;
+    }
+
+    if (!selectEstudios) {
+      setError('estudios', {
+        type: 'manual',
+        message: FormErrorMessage.requerido,
+      });
+      isValid = false;
+    }
+
+    if (!isValid) {
+      return;
+    }
+
+    const doctor = !isSelectDoctorDisabled ? selectDoctor : null;
+
     const docData = {
       title: values.nombre + ' ' + values.apellidos,
       start: moment(evento.start).format(),
@@ -48,12 +75,44 @@ export default function AgendaDrawer({ isOpen, onClose, evento }) {
       extendedProps: {
         nombre: values.nombre,
         apellidos: values.apellidos,
-        doctor: JSON.parse(values.doctor),
+        doctor: doctor,
+        estudios: selectEstudios,
       },
     };
+
     const doc = await db.createDocument('eventos', docData);
     loadEventos();
-    // onClose();
+    onClose();
+  };
+
+  const doctorOptions = usuarios.map(usuario => {
+    return {
+      value: JSON.stringify(usuario),
+      label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
+    };
+  });
+
+  const estudioOptions = catalogo.estudios.map(estudio => {
+    return {
+      value: JSON.stringify(estudio),
+      label: `${estudio.nombre}`,
+    };
+  });
+  const handleIsSinDoctor = e => {
+    setIsSelectDoctorDisabled(e.target.checked);
+  };
+
+  const handleSelectDoctor = e => {
+    e ? setSelectDoctor(JSON.parse(e.value)) : setSelectDoctor(null);
+  };
+
+  const handleSelectEstudios = e => {
+    const estudios = [];
+    e.map(estudio => {
+      estudios.push(JSON.parse(estudio.value));
+    });
+
+    setSelectEstudios(estudios);
   };
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'md'}>
@@ -72,7 +131,7 @@ export default function AgendaDrawer({ isOpen, onClose, evento }) {
               <FormControl isInvalid={errors.nombre}>
                 <FormLabel>Nombre</FormLabel>
                 <Input
-                  placeholder="Nombre de doctor"
+                  placeholder="Nombre de paciente"
                   {...register('nombre', {
                     required: FormValidationTexts.requerido,
                   })}
@@ -145,36 +204,42 @@ export default function AgendaDrawer({ isOpen, onClose, evento }) {
                   {errors.duracion_cita && errors.duracion_cita.message}
                 </FormErrorMessage>
               </FormControl>
+
               <FormControl isInvalid={errors.doctor}>
                 <FormLabel>Seleccionar Doctor</FormLabel>
                 <Select
+                  options={doctorOptions}
+                  isClearable={true}
+                  isSearchable={true}
                   placeholder="Seleccionar Doctor"
-                  {...register('doctor', {
-                    required: FormValidationTexts.requerido,
-                  })}
-                >
-                  <option>-- Sin Doctor --</option>
-                  {usuarios &&
-                    usuarios.map(usuario => {
-                      const value = JSON.stringify(usuario);
-                      return (
-                        <option value={value} key={usuario.id}>
-                          {usuario.nombre} {usuario.apellido_paterno}{' '}
-                          {usuario.apellido_materno}
-                        </option>
-                      );
-                    })}
-                </Select>
-                <Flex>
+                  isDisabled={isSelectDoctorDisabled}
+                  onChange={handleSelectDoctor}
+                />
+
+                <Flex mt={2}>
                   <FormControl display="flex" alignItems="center">
-                    <FormLabel mb="0">¿No tiene doctor?</FormLabel>
-                    <Switch />
+                    <FormLabel mb="0">Sin Doctor</FormLabel>
+                    <Switch onChange={handleIsSinDoctor} />
                   </FormControl>
                   <AgregarDoctorBtn />
                 </Flex>
-
                 <FormErrorMessage>
                   {errors.doctor && errors.doctor.message}
+                </FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={errors.estudios}>
+                <FormLabel>Seleccionar Estudios</FormLabel>
+                <Select
+                  options={estudioOptions}
+                  isMulti
+                  isClearable={true}
+                  isSearchable={true}
+                  placeholder="Seleccionar Estudio"
+                  onChange={handleSelectEstudios}
+                />
+                <FormErrorMessage>
+                  {errors.estudios && errors.estudios.message}
                 </FormErrorMessage>
               </FormControl>
             </Stack>

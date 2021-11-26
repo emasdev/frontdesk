@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@chakra-ui/react';
 import Doctores from './Doctores';
+import Listas_precios from './Listas_precios';
 import Usuarios from './Usuarios';
 import CatalogoEstudios from './CatalogoEstudios';
 
@@ -10,6 +11,7 @@ export default function Catalogos() {
       <TabList mb="1em">
         <Tab>Doctores</Tab>
         <Tab>Estudios</Tab>
+        <Tab>Precios</Tab>
         {/* <Tab>Listas de precios</Tab> */}
         {/* <Tab>Usuarios IDM Cloud</Tab> */}
       </TabList>
@@ -19,6 +21,9 @@ export default function Catalogos() {
         </TabPanel>
         <TabPanel>
           <CatalogoEstudios />
+        </TabPanel>
+        <TabPanel>
+          <Listas_precios />
         </TabPanel>
       </TabPanels>
     </Tabs>
