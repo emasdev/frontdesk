@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useContext, useState, useRef } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import moment from 'moment';
 
 import {
@@ -92,15 +92,12 @@ export default function AgendarBtn() {
     setFocus('nombre');
   };
 
-  const doctorOptions = [];
-  if (usuarios) {
-    usuarios.map(usuario => {
-      return {
-        value: JSON.stringify(usuario),
-        label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
-      };
-    });
-  }
+  const doctorOptions = usuarios.map(usuario => {
+    return {
+      value: JSON.stringify(usuario),
+      label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
+    };
+  });
 
   const estudioOptions = catalogo.estudios.map(estudio => {
     return {
@@ -125,8 +122,6 @@ export default function AgendarBtn() {
 
     setSelectEstudios(estudios);
   };
-
-  //debugger;
 
   return (
     <>
@@ -255,39 +250,6 @@ export default function AgendarBtn() {
                     {errors.estudios && errors.estudios.message}
                   </FormErrorMessage>
                 </FormControl>
-
-                {/* <FormControl isInvalid={errors.doctor}>
-                  <FormLabel>Seleccionar Doctor</FormLabel>
-                  <Select
-                    placeholder="Seleccionar Doctor"
-                    {...register('doctor', {
-                      required: FormValidationTexts.requerido,
-                    })}
-                  >
-                    <option>-- Sin Doctor --</option>
-                    {usuarios &&
-                      usuarios.map(usuario => {
-                        const value = JSON.stringify(usuario);
-                        return (
-                          <option value={value} key={usuario.id}>
-                            {usuario.nombre} {usuario.apellido_paterno}{' '}
-                            {usuario.apellido_materno}
-                          </option>
-                        );
-                      })}
-                  </Select>
-                  <Flex>
-                    <FormControl display="flex" alignItems="center">
-                      <FormLabel mb="0">¿No tiene doctor?</FormLabel>
-                      <Switch />
-                    </FormControl>
-                    <AgregarDoctorBtn />
-                  </Flex>
-
-                  <FormErrorMessage>
-                    {errors.doctor && errors.doctor.message}
-                  </FormErrorMessage>
-                </FormControl> */}
               </Stack>
               <Button
                 mt={8}

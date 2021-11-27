@@ -14,17 +14,21 @@ import moment from 'moment';
 
 export default function Eventos() {
   const { eventos } = useContext(AppContext);
-  const todayDate = moment().format('YYYY-MM-DD');
+  const [fecha, setFecha] = useState(moment().format('YYYY-MM-DD'))
   const [eventosPorDia, setEventosPorDia] = useState(null);
 
-  const filterEventosPorDia = date => {
+  useEffect(() => {
+    filterEventosPorFecha();
+  }, [eventos, fecha]);
+
+  const filterEventosPorFecha = () => {
     if (eventos) {
       const eventosDia = [];
+      console.log(fecha);
+      const compareDate = moment(fecha,'YYYY-MM-DD');
       eventos.map(evento => {
-        const eventoStart = moment(evento.start);
-        const compareDate = moment(date);
-        console.log(eventoStart.diff(compareDate, 'days'));
-        if (eventoStart.diff(compareDate, 'days') == 0) {
+        const eventoStart = moment(evento.start);    
+        if (eventoStart.isSame(compareDate, 'day')) {
           eventosDia.push(evento);
         }
       });
@@ -32,17 +36,16 @@ export default function Eventos() {
     }
   };
 
-  useEffect(() => {
-    filterEventosPorDia(todayDate);
-  }, [eventos]);
+
 
   const handleDate = e => {
-    console.log(e.target.value);
+    const selectedFecha = moment(e.target.value,'YYYY-MM-DD').clone().format('YYYY-MM-DD');
+    setFecha(selectedFecha);
   };
   return (
     <>
       <Stack direction="row" my={3}>
-        <Input type="date" onChange={handleDate} value={todayDate} />
+        <Input type="date" onChange={handleDate} value={fecha} />
       </Stack>
 
       <Table size="sm">

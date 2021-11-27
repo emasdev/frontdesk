@@ -43,7 +43,7 @@ export default function Agenda() {
         allDaySlot={false}
         events={eventos}
         slotMinTime="09:00:00"
-        slotMaxTime="19:00:00"
+        slotMaxTime="19:15:00"
         slotDuration="00:15:00"
       />
       <AgendaDrawer
