@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import moment from 'moment';
 
 import {
@@ -21,6 +21,8 @@ import {
   Text,
   Flex,
   Switch,
+  Box,
+  VStack,
 } from '@chakra-ui/react';
 import Select from 'react-select';
 import FormValidationTexts from '../helpers/FormValidationTexts';
@@ -28,7 +30,7 @@ import db from '../helpers/FirestoreService';
 import AppContext from '../context/AppContext';
 import AgregarDoctorBtn from './AgregarDoctorBtn';
 
-export default function AgendarBtn() {
+export default function RegistrarPacienteBtn({ isNow = false, children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { usuarios, loadEventos, catalogo } = useContext(AppContext);
   const {
@@ -42,6 +44,65 @@ export default function AgendarBtn() {
   const [isSelectDoctorDisabled, setIsSelectDoctorDisabled] = useState(false);
   const [selectDoctor, setSelectDoctor] = useState(null);
   const [selectEstudios, setSelectEstudios] = useState(null);
+  const [isHorarioSelectable, setIsHorarioSelectable] = useState(true);
+  const [horarioActual, setHorarioActual] = useState(moment().format('h:mm'));
+  const [selectHorario, setSelectHorario] = useState({
+    horas: null,
+    minutos: null,
+  });
+  const [hh, sethh] = useState(null);
+
+  const [doctorOptions, setDoctorOptions] = useState(null);
+  const [estudiosOptions, setEstudiosOptions] = useState(null);
+
+  const handleIsHorarioSelectable = e => {
+    setIsHorarioSelectable(e.target.checked);
+  };
+
+  const handleHoras = e => {
+    setSelectHorario({ ...selectHorario, horas: e.value });
+  };
+
+  const handleMinutos = e => {
+    setSelectHorario({ ...selectHorario, minutos: e.value });
+  };
+
+  const horasOptions = Array(9)
+    .fill(0)
+    .map((e, i) => {
+      const value = i + 9;
+      const label = i + 9;
+      return { value, label };
+    });
+
+  const minutosOptions = Array(4)
+    .fill(0)
+    .map((e, i) => {
+      const value = i * 15;
+      const label = i * 15;
+      return { value, label };
+    });
+
+  useEffect(() => {
+    if (!usuarios) return;
+    setDoctorOptions(
+      usuarios.map(usuario => {
+        return {
+          value: JSON.stringify(usuario),
+          label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
+        };
+      })
+    );
+
+    setEstudiosOptions(
+      catalogo.estudios.map(estudio => {
+        return {
+          value: JSON.stringify(estudio),
+          label: `${estudio.nombre}`,
+        };
+      })
+    );
+  }, [usuarios, catalogo]);
 
   //console.log(errors);
 
@@ -92,20 +153,6 @@ export default function AgendarBtn() {
     setFocus('nombre');
   };
 
-  const doctorOptions = usuarios.map(usuario => {
-    return {
-      value: JSON.stringify(usuario),
-      label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
-    };
-  });
-
-  const estudioOptions = catalogo.estudios.map(estudio => {
-    return {
-      value: JSON.stringify(estudio),
-      label: `${estudio.nombre}`,
-    };
-  });
-
   const handleIsSinDoctor = e => {
     setIsSelectDoctorDisabled(e.target.checked);
   };
@@ -123,16 +170,66 @@ export default function AgendarBtn() {
     setSelectEstudios(estudios);
   };
 
+  const SelectDuracion = ({ text }) => {
+    return (
+      <Stack>
+        <Text>{text}</Text>
+        <RadioGroup>
+          <Stack direction="row" spacing={4}>
+            <Flex alignItems="center">
+              <input
+                {...register('duracion_cita', {
+                  required: FormValidationTexts.requerido,
+                })}
+                type="radio"
+                value="15"
+              />
+              <Text ml={1}>15m</Text>
+            </Flex>
+            <Flex alignItems="center">
+              <input
+                {...register('duracion_cita', {
+                  required: FormValidationTexts.requerido,
+                })}
+                type="radio"
+                value="30"
+              />
+              <Text ml={1}>30m</Text>
+            </Flex>
+            <Flex alignItems="center">
+              <input
+                {...register('duracion_cita', {
+                  required: FormValidationTexts.requerido,
+                })}
+                type="radio"
+                value="45"
+              />
+              <Text ml={1}>45m</Text>
+            </Flex>
+            <Flex alignItems="center">
+              <input
+                {...register('duracion_cita', {
+                  required: FormValidationTexts.requerido,
+                })}
+                type="radio"
+                value="60"
+              />
+              <Text ml={1}>60m</Text>
+            </Flex>
+          </Stack>
+        </RadioGroup>
+      </Stack>
+    );
+  };
+
   return (
     <>
-      <Button onClick={handleOpen}>Agendar ahora</Button>
+      <Button onClick={handleOpen}>{children}</Button>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'md'}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">
-            Registrar nuevo paciente
-          </DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">{children}</DrawerHeader>
 
           <DrawerBody>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -164,51 +261,44 @@ export default function AgendarBtn() {
                 </FormControl>
 
                 <FormControl isInvalid={errors.duracion_cita}>
-                  <FormLabel>Duracion Cita</FormLabel>
-                  <RadioGroup>
-                    <Stack direction="row" spacing={4}>
-                      <Flex alignItems="center">
-                        <input
-                          {...register('duracion_cita', {
-                            required: FormValidationTexts.requerido,
-                          })}
-                          type="radio"
-                          value="15"
+                  <FormLabel>Horario</FormLabel>
+                  <Flex
+                    justifyContent="space-between"
+                    justifyItems="center"
+                    alignItems="center"
+                  >
+                    {isHorarioSelectable ? (
+                      <Text>horario</Text>
+                    ) : (
+                      <VStack>
+                        <Text>
+                          {selectHorario.horas} : {selectHorario.minutos}
+                        </Text>
+                        <Select
+                          options={horasOptions}
+                          isSearchable={true}
+                          placeholder="Seleccionar hora"
+                          onChange={handleHoras}
                         />
-                        <Text ml={1}>15m</Text>
-                      </Flex>
-                      <Flex alignItems="center">
-                        <input
-                          {...register('duracion_cita', {
-                            required: FormValidationTexts.requerido,
-                          })}
-                          type="radio"
-                          value="30"
+                        <Select
+                          options={minutosOptions}
+                          isSearchable={true}
+                          placeholder="Seleccionar minutos"
+                          onChange={handleMinutos}
                         />
-                        <Text ml={1}>30m</Text>
-                      </Flex>
-                      <Flex alignItems="center">
-                        <input
-                          {...register('duracion_cita', {
-                            required: FormValidationTexts.requerido,
-                          })}
-                          type="radio"
-                          value="45"
-                        />
-                        <Text ml={1}>45m</Text>
-                      </Flex>
-                      <Flex alignItems="center">
-                        <input
-                          {...register('duracion_cita', {
-                            required: FormValidationTexts.requerido,
-                          })}
-                          type="radio"
-                          value="60"
-                        />
-                        <Text ml={1}>60m</Text>
-                      </Flex>
+                      </VStack>
+                    )}
+                    <Stack direction="column">
+                      <Switch
+                        onChange={handleIsHorarioSelectable}
+                        isChecked={isHorarioSelectable}
+                      >
+                        Seleccionar hora actual
+                      </Switch>
+                      <SelectDuracion text={'Duración'} />
                     </Stack>
-                  </RadioGroup>
+                  </Flex>
+
                   <FormErrorMessage>
                     {errors.duracion_cita && errors.duracion_cita.message}
                   </FormErrorMessage>
@@ -239,7 +329,7 @@ export default function AgendarBtn() {
                 <FormControl isInvalid={errors.estudios}>
                   <FormLabel>Seleccionar Estudios</FormLabel>
                   <Select
-                    options={estudioOptions}
+                    options={estudiosOptions}
                     isMulti
                     isClearable={true}
                     isSearchable={true}

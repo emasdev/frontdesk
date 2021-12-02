@@ -5,7 +5,7 @@ import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClic
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
 import AppContext from '../context/AppContext';
-import AgendarAhoraBtn from './AgendarAhoraBtn';
+import AgendarBtn from './AgendarBtn';
 import { Text, useDisclosure } from '@chakra-ui/react';
 import AgendaDrawer from './AgendaDrawer';
 
@@ -28,7 +28,7 @@ export default function Agenda() {
 
   return (
     <>
-      <AgendarAhoraBtn />
+      <AgendarBtn>Agendar</AgendarBtn>
       <Text>Para agendar una cita seleccione un horario</Text>
       <FullCalendar
         plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
