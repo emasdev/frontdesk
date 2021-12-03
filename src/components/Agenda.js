@@ -5,11 +5,12 @@ import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClic
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
 import AppContext from '../context/AppContext';
-import AgendarBtn from './AgendarBtn';
 import { Text, useDisclosure } from '@chakra-ui/react';
-import AgendaDrawer from './AgendaDrawer';
+import AgendarDrawer from './AgendarDrawer';
+import moment from 'moment/min/moment-with-locales';
 
 export default function Agenda() {
+  moment.locale('es');
   const { eventos } = useContext(AppContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [eventoSeleccionado, setEventoSeleccionado] = useState({});
@@ -28,7 +29,6 @@ export default function Agenda() {
 
   return (
     <>
-      <AgendarBtn>Agendar</AgendarBtn>
       <Text>Para agendar una cita seleccione un horario</Text>
       <FullCalendar
         plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
@@ -46,10 +46,11 @@ export default function Agenda() {
         slotMaxTime="19:15:00"
         slotDuration="00:15:00"
       />
-      <AgendaDrawer
+      <AgendarDrawer
         isOpen={isOpen}
         onClose={onClose}
         evento={eventoSeleccionado}
+        title={moment(eventoSeleccionado.start).format('LLLL')}
       />
     </>
   );

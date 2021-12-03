@@ -8,14 +8,20 @@ import {
   Td,
   Input,
   Stack,
+  useDisclosure,
+  Box,
+  FormControl,
 } from '@chakra-ui/react';
 import AppContext from '../context/AppContext';
 import moment from 'moment';
+import EventoDrawer from './EventoDrawer';
 
 export default function Eventos() {
   const { eventos } = useContext(AppContext);
-  const [fecha, setFecha] = useState(moment().format('YYYY-MM-DD'))
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [fecha, setFecha] = useState(moment().format('YYYY-MM-DD'));
   const [eventosPorDia, setEventosPorDia] = useState(null);
+  const [evento, setEvento] = useState(null);
 
   useEffect(() => {
     filterEventosPorFecha();
@@ -25,9 +31,9 @@ export default function Eventos() {
     if (eventos) {
       const eventosDia = [];
       console.log(fecha);
-      const compareDate = moment(fecha,'YYYY-MM-DD');
+      const compareDate = moment(fecha, 'YYYY-MM-DD');
       eventos.map(evento => {
-        const eventoStart = moment(evento.start);    
+        const eventoStart = moment(evento.start);
         if (eventoStart.isSame(compareDate, 'day')) {
           eventosDia.push(evento);
         }
@@ -36,17 +42,23 @@ export default function Eventos() {
     }
   };
 
-
-
   const handleDate = e => {
-    const selectedFecha = moment(e.target.value,'YYYY-MM-DD').clone().format('YYYY-MM-DD');
+    const selectedFecha = moment(e.target.value, 'YYYY-MM-DD')
+      .clone()
+      .format('YYYY-MM-DD');
     setFecha(selectedFecha);
   };
+
+  const onSelectEvento = evento => {
+    setEvento(evento);
+    onOpen();
+  };
+
   return (
     <>
-      <Stack direction="row" my={3}>
+      <FormControl>
         <Input type="date" onChange={handleDate} value={fecha} />
-      </Stack>
+      </FormControl>
 
       <Table size="sm">
         <Thead>
@@ -63,15 +75,15 @@ export default function Eventos() {
           {eventosPorDia &&
             eventosPorDia.map(evento => {
               const horario = moment(evento.start).format('HH:mm');
-              const paciente = `${evento.extendedProps.nombre} ${evento.extendedProps.apellidos}`;
+              const nombrePaciente = `${evento.extendedProps.paciente.nombre} ${evento.extendedProps.paciente.apellidos}`;
               let doctor = '- Sin Doctor -';
               if (evento.extendedProps.doctor) {
                 doctor = `${evento.extendedProps.doctor.nombre} ${evento.extendedProps.doctor.apellido_paterno} ${evento.extendedProps.doctor.apellido_materno}`;
               }
               return (
-                <Tr key={evento.id}>
+                <Tr key={evento.id} onClick={() => onSelectEvento(evento)}>
                   <Td>{horario}</Td>
-                  <Td>{paciente}</Td>
+                  <Td>{nombrePaciente}</Td>
                   <Td>{doctor}</Td>
                   <Td>Total</Td>
                   <Td>Pago</Td>
@@ -81,6 +93,13 @@ export default function Eventos() {
             })}
         </Tbody>
       </Table>
+      <EventoDrawer
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        title={'Cita'}
+        evento={evento}
+      />
     </>
   );
 }

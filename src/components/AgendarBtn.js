@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useContext, useState, useEffect, useRef } from 'react';
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 
 import {
   Drawer,
@@ -23,6 +23,7 @@ import {
   Switch,
   Box,
   VStack,
+  SimpleGrid,
 } from '@chakra-ui/react';
 import Select from 'react-select';
 import FormValidationTexts from '../helpers/FormValidationTexts';
@@ -30,7 +31,8 @@ import db from '../helpers/FirestoreService';
 import AppContext from '../context/AppContext';
 import AgregarDoctorBtn from './AgregarDoctorBtn';
 
-export default function RegistrarPacienteBtn({ isNow = false, children }) {
+export default function AgendarBtn({ isNow = false, children }) {
+  moment.locale('es');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { usuarios, loadEventos, catalogo } = useContext(AppContext);
   const {
@@ -38,33 +40,70 @@ export default function RegistrarPacienteBtn({ isNow = false, children }) {
     handleSubmit,
     setFocus,
     setError,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm();
 
   const [isSelectDoctorDisabled, setIsSelectDoctorDisabled] = useState(false);
   const [selectDoctor, setSelectDoctor] = useState(null);
   const [selectEstudios, setSelectEstudios] = useState(null);
-  const [isHorarioSelectable, setIsHorarioSelectable] = useState(true);
-  const [horarioActual, setHorarioActual] = useState(moment().format('h:mm'));
+  const [duracion, setDuracion] = useState(null);
+  const [isHorarioActual, setIsHorarioActual] = useState(true);
+  const [isHorarioSet, setIsHorarioSet] = useState(false);
+  const [horario, setHorario] = useState(null);
   const [selectHorario, setSelectHorario] = useState({
     horas: null,
     minutos: null,
+    fecha: null,
   });
-  const [hh, sethh] = useState(null);
 
   const [doctorOptions, setDoctorOptions] = useState(null);
   const [estudiosOptions, setEstudiosOptions] = useState(null);
+  const watchDuracionCita = watch('duracion_cita', null);
+  const watchNombrePaciente = watch('nombre', null);
+  const watchApellidosPaciente = watch('apellidos', null);
 
-  const handleIsHorarioSelectable = e => {
-    setIsHorarioSelectable(e.target.checked);
+  const handleDuracion = e => {
+    console.log(e);
+  };
+
+  const handleIsHorarioActual = e => {
+    setIsHorarioActual(e.target.checked);
+  };
+
+  useEffect(() => {
+    if (isHorarioActual) {
+      setIsHorarioSet(false);
+      setHorario(moment().format());
+    } else {
+      console.log(selectHorario);
+      const { horas, minutos, fecha } = selectHorario;
+
+      if (horas && minutos && fecha) {
+        const horario = `${horas}:${minutos} ${fecha}`;
+        setHorario(moment(horario, 'HH:mm YYYY-MM-DD').format());
+        setIsHorarioSet(true);
+      }
+    }
+    console.log('select horario change');
+  }, [selectHorario, isHorarioActual]);
+
+  const handleFecha = e => {
+    e
+      ? setSelectHorario({ ...selectHorario, fecha: e.target.value })
+      : setSelectHorario({ ...selectHorario, fecha: null });
   };
 
   const handleHoras = e => {
-    setSelectHorario({ ...selectHorario, horas: e.value });
+    e
+      ? setSelectHorario({ ...selectHorario, horas: e.value })
+      : setSelectHorario({ ...selectHorario, horas: null });
   };
 
   const handleMinutos = e => {
-    setSelectHorario({ ...selectHorario, minutos: e.value });
+    e
+      ? setSelectHorario({ ...selectHorario, minutos: e.value })
+      : setSelectHorario({ ...selectHorario, minutos: null });
   };
 
   const horasOptions = Array(9)
@@ -134,8 +173,10 @@ export default function RegistrarPacienteBtn({ isNow = false, children }) {
 
     const docData = {
       title: values.nombre + ' ' + values.apellidos,
-      start: moment().format(),
-      end: moment().add(parseInt(values.duracion_cita), 'minutes').format(),
+      start: moment(horario).format(),
+      end: moment(horario)
+        .add(parseInt(values.duracion_cita), 'minutes')
+        .format(),
       extendedProps: {
         nombre: values.nombre,
         apellidos: values.apellidos,
@@ -172,10 +213,20 @@ export default function RegistrarPacienteBtn({ isNow = false, children }) {
 
   const SelectDuracion = ({ text }) => {
     return (
-      <Stack>
-        <Text>{text}</Text>
+      <SimpleGrid columns={2}>
+        <FormLabel>{text}</FormLabel>
         <RadioGroup>
           <Stack direction="row" spacing={4}>
+            <Flex alignItems="center">
+              <input
+                {...register('duracion_cita', {
+                  required: FormValidationTexts.requerido,
+                })}
+                type="radio"
+                value="0"
+              />
+              <Text ml={1}>0m</Text>
+            </Flex>
             <Flex alignItems="center">
               <input
                 {...register('duracion_cita', {
@@ -206,19 +257,9 @@ export default function RegistrarPacienteBtn({ isNow = false, children }) {
               />
               <Text ml={1}>45m</Text>
             </Flex>
-            <Flex alignItems="center">
-              <input
-                {...register('duracion_cita', {
-                  required: FormValidationTexts.requerido,
-                })}
-                type="radio"
-                value="60"
-              />
-              <Text ml={1}>60m</Text>
-            </Flex>
           </Stack>
         </RadioGroup>
-      </Stack>
+      </SimpleGrid>
     );
   };
 
@@ -261,43 +302,76 @@ export default function RegistrarPacienteBtn({ isNow = false, children }) {
                 </FormControl>
 
                 <FormControl isInvalid={errors.duracion_cita}>
-                  <FormLabel>Horario</FormLabel>
-                  <Flex
-                    justifyContent="space-between"
-                    justifyItems="center"
-                    alignItems="center"
-                  >
-                    {isHorarioSelectable ? (
-                      <Text>horario</Text>
-                    ) : (
-                      <VStack>
-                        <Text>
-                          {selectHorario.horas} : {selectHorario.minutos}
-                        </Text>
+                  <FormLabel>Seleccionar Fecha</FormLabel>
+
+                  <VStack>
+                    <Box
+                      border="1px"
+                      textAlign="center"
+                      borderColor="gray.400"
+                      borderRadius="md"
+                      p={2}
+                      m={2}
+                    >
+                      {isHorarioActual ? (
+                        <>
+                          <Text>{moment(horario).format('LL')}</Text>
+                          <Text>{moment(horario).format('HH:mm')}</Text>
+                        </>
+                      ) : (
+                        <>
+                          {isHorarioSet ? (
+                            <>
+                              <Text>{moment(horario).format('LL')}</Text>
+                              <Text>{moment(horario).format('HH:mm')}</Text>
+                            </>
+                          ) : (
+                            <Text>Seleccionar Horario</Text>
+                          )}
+                        </>
+                      )}
+                    </Box>
+                  </VStack>
+
+                  <Stack direction="column">
+                    <Box textAlign="center">
+                      <Switch
+                        onChange={handleIsHorarioActual}
+                        isChecked={isHorarioActual}
+                      >
+                        Seleccionar hora y fecha actual
+                      </Switch>
+                    </Box>
+
+                    {console.log(selectHorario.horas)}
+
+                    {!isHorarioActual && (
+                      <SimpleGrid columns={2}>
+                        <FormLabel>Fecha:</FormLabel>
+                        <Input
+                          type="date"
+                          onChange={handleFecha}
+                          value={selectHorario.fecha}
+                        />
+                        <FormLabel>Hora:</FormLabel>
                         <Select
                           options={horasOptions}
                           isSearchable={true}
                           placeholder="Seleccionar hora"
                           onChange={handleHoras}
                         />
+                        <FormLabel>Minuto:</FormLabel>
                         <Select
                           options={minutosOptions}
                           isSearchable={true}
                           placeholder="Seleccionar minutos"
                           onChange={handleMinutos}
                         />
-                      </VStack>
+                      </SimpleGrid>
                     )}
-                    <Stack direction="column">
-                      <Switch
-                        onChange={handleIsHorarioSelectable}
-                        isChecked={isHorarioSelectable}
-                      >
-                        Seleccionar hora actual
-                      </Switch>
-                      <SelectDuracion text={'Duración'} />
-                    </Stack>
-                  </Flex>
+
+                    <SelectDuracion text={'Duración'} />
+                  </Stack>
 
                   <FormErrorMessage>
                     {errors.duracion_cita && errors.duracion_cita.message}
