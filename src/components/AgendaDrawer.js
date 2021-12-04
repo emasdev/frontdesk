@@ -88,7 +88,7 @@ export default function AgendaDrawer({ isOpen, onClose, evento }) {
   const doctorOptions = usuarios.map(usuario => {
     return {
       value: JSON.stringify(usuario),
-      label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
+      label: `${usuario.nombre} ${usuario.apellidos}`,
     };
   });
 

@@ -46,8 +46,7 @@ export default function EditarDoctorDrawer({
   const onSubmit = async values => {
     const docData = {
       nombre: values.nombre,
-      apellido_paterno: values.apellido_paterno,
-      apellido_materno: values.apellido_materno,
+      apellidos: values.apellidos,
       tel: values.tel,
     };
     const doc = await db.createDocument('usuarios', docData);
@@ -74,7 +73,7 @@ export default function EditarDoctorDrawer({
                 <FormControl isInvalid={errors.nombre}>
                   <FormLabel>Nombre</FormLabel>
                   <Input
-                    placeholder="Nombre de doctor"
+                    placeholder="Nombre de Doctor"
                     {...register('nombre', {
                       required: FormValidationTexts.requerido,
                     })}
@@ -84,26 +83,16 @@ export default function EditarDoctorDrawer({
                   </FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={errors.apellido_paterno}>
-                  <FormLabel>Apellido Paterno</FormLabel>
+                <FormControl isInvalid={errors.apellidos}>
+                  <FormLabel>Apellidos</FormLabel>
                   <Input
-                    placeholder="Apellido Paterno"
-                    {...register('apellido_paterno', {
+                    placeholder="Apellidos de Doctor"
+                    {...register('apellidos', {
                       required: FormValidationTexts.requerido,
                     })}
                   />
                   <FormErrorMessage>
-                    {errors.apellido_paterno && errors.apellido_paterno.message}
-                  </FormErrorMessage>
-                </FormControl>
-                <FormControl isInvalid={errors.apellido_materno}>
-                  <FormLabel>Apellido Materno</FormLabel>
-                  <Input
-                    placeholder="Apellido Materno"
-                    {...register('apellido_materno')}
-                  />
-                  <FormErrorMessage>
-                    {errors.apellido_materno && errors.apellido_materno.message}
+                    {errors.apellidos && errors.apellidos.message}
                   </FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={errors.tel}>

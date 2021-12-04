@@ -28,7 +28,7 @@ export default function UploadEstudio({ onUpload, onOpen, doctores }) {
   const onSubmit = async data => {
 
     const doctor = JSON.parse(data.doctor);
-    const nombre_doctor = `${doctor.nombre} ${doctor.apellido_paterno} ${doctor.apellido_materno}`;
+    const nombre_doctor = `${doctor.nombre} ${doctor.apellidos}`;
 
     const estudioDocData = {
       estudio: data.estudio,
@@ -80,7 +80,7 @@ export default function UploadEstudio({ onUpload, onOpen, doctores }) {
         >
           {doctores &&
             doctores.map(data => {
-              const nombre = `${data.nombre} ${data.apellido_paterno} ${data.apellido_materno}`;
+              const nombre = `${data.nombre} ${data.apellidos}`;
               const dataJSON = JSON.stringify(data);
               return (
                 <option value={dataJSON} key={data.id}>

@@ -78,7 +78,7 @@ export default function Eventos() {
               const nombrePaciente = `${evento.extendedProps.paciente.nombre} ${evento.extendedProps.paciente.apellidos}`;
               let doctor = '- Sin Doctor -';
               if (evento.extendedProps.doctor) {
-                doctor = `${evento.extendedProps.doctor.nombre} ${evento.extendedProps.doctor.apellido_paterno} ${evento.extendedProps.doctor.apellido_materno}`;
+                doctor = `${evento.extendedProps.doctor.nombre} ${evento.extendedProps.doctor.apellidos}`;
               }
               return (
                 <Tr key={evento.id} onClick={() => onSelectEvento(evento)}>

@@ -65,8 +65,7 @@ export default function AgendarDoctor() {
                 const value = JSON.stringify(usuario);
                 return (
                   <option value={value} key={usuario.id}>
-                    {usuario.nombre} {usuario.apellido_paterno}{' '}
-                    {usuario.apellido_materno}
+                    {usuario.nombre} {usuario.apellidos}
                   </option>
                 );
               })}

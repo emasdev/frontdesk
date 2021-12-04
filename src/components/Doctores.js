@@ -14,7 +14,7 @@ import AgregarDoctorBtn from './AgregarDoctorBtn';
 import AppContext from '../context/AppContext';
 import EditarDoctorDrawer from './EditarDoctorDrawer';
 
-export default function Doctores() {
+export default function  Doctores() {
   const { usuarios } = useContext(AppContext);
   const [selected, setSelected] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -42,9 +42,7 @@ export default function Doctores() {
               return (
                 <Tr key={usuario.id} onClick={() => handleSelected(usuario)}>
                   <Td>{usuario.nombre}</Td>
-                  <Td>
-                    {usuario.apellido_paterno} {usuario.apellido_materno}
-                  </Td>
+                  <Td>{usuario.apellidos}</Td>
                   <Td>{usuario.tel}</Td>
                   <Td>{usuario.dir_consultorio && usuario.dir_consultorio}</Td>
                 </Tr>

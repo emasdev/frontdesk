@@ -22,9 +22,7 @@ export default function Usuarios() {
               return (
                 <Tr key={usuario.id}>
                   <Td>{usuario.nombre}</Td>
-                  <Td>
-                    {usuario.apellido_paterno} {usuario.apellido_materno}
-                  </Td>
+                  <Td>{usuario.apellidos}</Td>
                   <Td>{usuario.tel}</Td>
                 </Tr>
               );

@@ -115,7 +115,7 @@ export default function AgendarDrawer({
       usuarios.map(usuario => {
         return {
           value: JSON.stringify(usuario),
-          label: `${usuario.nombre} ${usuario.apellido_paterno} ${usuario.apellido_materno}`,
+          label: `${usuario.nombre} ${usuario.apellidos}`,
         };
       })
     );
@@ -205,8 +205,9 @@ export default function AgendarDrawer({
           {doctor && (
             <>
               <Text>Doctor:</Text>
+              {console.log(doctor)}
               <Text>
-                {!isSelectDoctorDisabled ? doctor.nombre : `-- Sin Doctor --`}
+                {!isSelectDoctorDisabled ? `${doctor.nombre} ${doctor.apellidos}` : `-- Sin Doctor --`}
               </Text>
             </>
           )}
