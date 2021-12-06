@@ -1,0 +1,4 @@
+.fc .fc-timegrid-slot:hover {
+  background-color: grey;
+  cursor: pointer;
+}
