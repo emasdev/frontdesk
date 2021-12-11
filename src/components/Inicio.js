@@ -23,9 +23,9 @@ export default function Inicio() {
       <Eventos />
       <AgendarDrawer
         isOpen={isOpen}
-        onOpen={onOpen}
         onClose={onClose}
         title={drawerTitle}
+        displayFechaNacimiento={true}
       />
     </>
   );

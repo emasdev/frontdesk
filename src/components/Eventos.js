@@ -38,6 +38,9 @@ export default function Eventos() {
           eventosDia.push(evento);
         }
       });
+      eventosDia.sort(function (a, b) {
+        return moment(a.start).isBefore(moment(b.start));
+      });
       setEventosPorDia(eventosDia);
     }
   };
@@ -57,10 +60,10 @@ export default function Eventos() {
   return (
     <>
       <FormControl>
-        <Input type="date" onChange={handleDate} value={fecha} />
+        <Input type="date" onChange={handleDate} value={fecha} w="220px" />
       </FormControl>
 
-      <Table size="sm">
+      <Table size="sm" mt={4}>
         <Thead>
           <Tr>
             <Th>Hora</Th>

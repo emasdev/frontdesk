@@ -14,8 +14,8 @@ const createDocument = (collectionName, docData) => {
   return addDoc(collection(db, collectionName), docData);
 };
 
-const createDocumentAs = (collectionName, docName, docData) => {
-  return setDoc(doc(db, collectionName, docName), docData);
+const updateDocument = (collectionName, id, docData) => {
+  return setDoc(doc(db, collectionName, id), docData);
 };
 
 const readDocuments = async collectionName => {
@@ -51,9 +51,9 @@ const readDocument = async (collectionName, docName) => {
 
 const FirestoreService = {
   createDocument,
-  createDocumentAs,
   readDocuments,
   readDocument,
+  updateDocument,
 };
 
 export default FirestoreService;

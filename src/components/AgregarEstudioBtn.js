@@ -134,7 +134,6 @@ export default function AgregarEstudioBtn() {
                 <FormControl isInvalid={errors.precios}>
                   <FormLabel>Precios</FormLabel>
                   <Table variant="simple">
-                    <TableCaption>Precios del estudio</TableCaption>
                     <Thead>
                       <Tr>
                         <Th>Lista de precios</Th>
@@ -159,9 +158,9 @@ export default function AgregarEstudioBtn() {
                         })}
                     </Tbody>
                   </Table>
-                  <Flex justifyContent="end" mt={2}>
+                  {/* <Flex justifyContent="end" mt={2}>
                     <AgregarListaPreciosBtn />
-                  </Flex>
+                  </Flex> */}
                 </FormControl>
               </Stack>
               <Divider my={4} />

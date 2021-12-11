@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 import {
   Drawer,
@@ -40,6 +40,7 @@ export default function EditarDoctorDrawer({
     register,
     handleSubmit,
     setFocus,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -49,7 +50,7 @@ export default function EditarDoctorDrawer({
       apellidos: values.apellidos,
       tel: values.tel,
     };
-    const doc = await db.createDocument('usuarios', docData);
+    const doc = await db.updateDocument('usuarios', doctor.id, docData);
     loadUsuarios();
     onClose();
   };
@@ -59,16 +60,24 @@ export default function EditarDoctorDrawer({
     setFocus('nombre');
   };
 
+  useEffect(() => {
+    if (doctor) {
+      setValue('nombre', doctor.nombre);
+      setValue('apellidos', doctor.apellidos);
+      setValue('tel', doctor.tel);
+    }
+  }, [doctor]);
+
   return (
     <>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'md'}>
         <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Editar Doctor</DrawerHeader>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader borderBottomWidth="1px">Editar Doctor</DrawerHeader>
 
-          <DrawerBody>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <DrawerBody>
               <Stack spacing="24px">
                 <FormControl isInvalid={errors.nombre}>
                   <FormLabel>Nombre</FormLabel>
@@ -111,6 +120,8 @@ export default function EditarDoctorDrawer({
                   </FormErrorMessage>
                 </FormControl>
               </Stack>
+            </DrawerBody>
+            <DrawerFooter borderTopWidth="1px">
               <Flex>
                 <Button
                   mt={8}
@@ -120,23 +131,10 @@ export default function EditarDoctorDrawer({
                 >
                   Editar
                 </Button>
-                <Button
-                  mt={8}
-                  colorScheme="red"
-                  isLoading={isSubmitting}
-                  type="submit"
-                >
-                  Borrar
-                </Button>
               </Flex>
-            </form>
-          </DrawerBody>
-          <DrawerFooter borderTopWidth="1px">
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancelar
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
+            </DrawerFooter>
+          </DrawerContent>
+        </form>
       </Drawer>
     </>
   );
