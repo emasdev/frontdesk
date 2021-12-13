@@ -41,27 +41,33 @@ export default function Agenda() {
   return (
     <>
       <Text>Para agendar una cita seleccione un horario</Text>
-      <Flex bgColor="gray.100" justifyContent="space-around">
-        <FullCalendar
-          plugins={[timeGridPlugin, interactionPlugin]}
-          initialView="timeGridDay"
-          dateClick={handleDateClick}
-          headerToolbar={{
-            start: 'title', // will normally be on the left. if RTL, will be on the right
-            center: 'timeGridDay,timeGridWeek',
-            end: 'today prev,next', // will normally be on the right. if RTL, will be on the left
-          }}
-          locale={esLocale}
-          allDaySlot={false}
-          events={eventos}
-          slotMinTime="09:00:00"
-          slotMaxTime="19:15:00"
-          slotDuration="00:15:00"
-          ref={calendario}
-          eventMouseEnter={e => {
-            console.log(e);
-          }}
-        />
+      <Flex bgColor="gray.100" justifyContent="space-around" h="100%">
+        <Box w="100%">
+          <FullCalendar
+            plugins={[timeGridPlugin, interactionPlugin]}
+            initialView="timeGridDay"
+            dateClick={handleDateClick}
+            headerToolbar={{
+              start: 'title', // will normally be on the left. if RTL, will be on the right
+              center: 'today',
+              end: 'prev,next', // will normally be on the right. if RTL, will be on the left
+            }}
+            locale={esLocale}
+            allDaySlot={false}
+            events={eventos}
+            slotMinTime="09:00:00"
+            slotMaxTime="19:15:00"
+            slotDuration="00:15:00"
+            slotLabelInterval="00:15:00"
+            ref={calendario}
+            slotLabelFormat={{
+              hour: '2-digit',
+              minute: '2-digit',
+              omitZeroMinute: false,
+            }}
+          />
+        </Box>
+
 
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
@@ -72,7 +78,6 @@ export default function Agenda() {
             end: 'today prev,next', // will normally be on the right. if RTL, will be on the left
           }}
           locale={esLocale}
-          events={eventos}
           navLinks={true}
           dateClick={date => {
             handleFecha(date);

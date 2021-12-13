@@ -36,7 +36,6 @@ import AgregarDoctorBtn from './AgregarDoctorBtn';
 export default function AgendarDrawer({
   isOpen,
   onClose,
-  onOpen,
   evento,
   title,
   displayFechaNacimiento = false,
@@ -67,17 +66,13 @@ export default function AgendarDrawer({
           : null,
       });
       setDuracion(value.duracion_cita);
-      console.log(paciente);
-      console.log(value);
     });
     return () => subscription.unsubscribe();
   }, [watch]);
 
   const [isSelectDoctorDisabled, setIsSelectDoctorDisabled] = useState(false);
   const [selectEstudios, setSelectEstudios] = useState(null);
-  const [fecha, setFecha] = useState(moment().format());
-  const firstField = useRef();
-
+  const [fecha, setFecha] = useState();
   const [doctorOptions, setDoctorOptions] = useState(null);
   const [estudiosOptions, setEstudiosOptions] = useState(null);
   const [isFechaValida, setIsFechaValida] = useState(null);
@@ -87,6 +82,7 @@ export default function AgendarDrawer({
       const _fecha = moment(evento.start).format();
       const isBefore = moment(_fecha).isBefore(moment());
       setIsFechaValida(!isBefore);
+      setFecha(_fecha);
     } else {
       setIsFechaValida(true);
     }
@@ -95,13 +91,20 @@ export default function AgendarDrawer({
   useEffect(() => {
     //reset
     if (isOpen) {
+      //setDuracion(null);
       setValue('nombre', '');
       setValue('apellidos', '');
+      setValue('duracion_cita', '');
       //setFocus('nombre');
-      if (displayFechaNacimiento) setValue('fecha_nacimiento', '');
+      if (displayFechaNacimiento) {
+        setValue('fecha_nacimiento', '');
+        setFecha(moment().format());
+      }
       setDoctor(null);
       setSelectEstudios(null);
-      setDuracion(null);
+      setPaciente(null)
+
+
     }
   }, [isOpen]);
 
@@ -229,7 +232,7 @@ export default function AgendarDrawer({
     return (
       <Flex justifyContent="space-between">
         <FormLabel>{text}</FormLabel>
-        <RadioGroup>
+        <RadioGroup value="60">
           <Stack direction="row" spacing={4}>
             <Flex alignItems="center">
               <input
@@ -284,7 +287,7 @@ export default function AgendarDrawer({
         placement="right"
         onClose={onClose}
         size={'md'}
-        //initialFocusRef={firstField}
+      //initialFocusRef={firstField}
       >
         <DrawerOverlay />
         {isFechaValida ? (
@@ -301,7 +304,7 @@ export default function AgendarDrawer({
                       {...register('nombre', {
                         required: FormValidationTexts.requerido,
                       })}
-                      //ref={firstField}
+                    //ref={firstField}
                     />
                     <FormErrorMessage>
                       {errors.nombre && errors.nombre.message}

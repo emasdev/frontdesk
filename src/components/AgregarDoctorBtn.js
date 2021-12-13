@@ -60,14 +60,12 @@ export default function AgregarDoctorBtn() {
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size={'md'}>
         <DrawerOverlay />
         <form onSubmit={handleSubmit(onSubmit)}>
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">
-            Agregar nuevo Doctor
-          </DrawerHeader>
-
-          <DrawerBody>
-
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader borderBottomWidth="1px">
+              Agregar nuevo Doctor
+            </DrawerHeader>
+            <DrawerBody>
               <Stack spacing="24px">
                 <FormControl isInvalid={errors.nombre}>
                   <FormLabel>Nombre</FormLabel>
@@ -81,7 +79,6 @@ export default function AgregarDoctorBtn() {
                     {errors.nombre && errors.nombre.message}
                   </FormErrorMessage>
                 </FormControl>
-
                 <FormControl isInvalid={errors.apellidos}>
                   <FormLabel>Apellidos</FormLabel>
                   <Input
@@ -110,11 +107,9 @@ export default function AgregarDoctorBtn() {
                   </FormErrorMessage>
                 </FormControl>
               </Stack>
-
-         
-          </DrawerBody>
-          <DrawerFooter borderTopWidth="1px">
-          <Button
+            </DrawerBody>
+            <DrawerFooter borderTopWidth="1px">
+              <Button
                 mt={8}
                 colorScheme="teal"
                 isLoading={isSubmitting}
@@ -122,8 +117,8 @@ export default function AgregarDoctorBtn() {
               >
                 Agregar
               </Button>
-          </DrawerFooter>
-        </DrawerContent>
+            </DrawerFooter>
+          </DrawerContent>
         </form>
       </Drawer>
     </>

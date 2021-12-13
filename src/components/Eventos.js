@@ -39,7 +39,7 @@ export default function Eventos() {
         }
       });
       eventosDia.sort(function (a, b) {
-        return moment(a.start).isBefore(moment(b.start));
+        return moment(a.start).diff(moment(b.start));
       });
       setEventosPorDia(eventosDia);
     }
@@ -100,7 +100,7 @@ export default function Eventos() {
         isOpen={isOpen}
         onOpen={onOpen}
         onClose={onClose}
-        title={'Cita'}
+        title={'Información de cita'}
         evento={evento}
       />
     </>

@@ -95,7 +95,6 @@ export default function EventoDrawer({
     horas: null,
     minutos: null,
   });
-  const [hh, sethh] = useState(null);
 
   const [doctorOptions, setDoctorOptions] = useState(null);
   const [estudiosOptions, setEstudiosOptions] = useState(null);
@@ -321,31 +320,6 @@ export default function EventoDrawer({
             <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
             <DrawerBody>
               <Stack spacing="24px">
-                <FormControl isInvalid={errors.nombre}>
-                  <FormLabel>Nombre</FormLabel>
-                  <Input
-                    placeholder="Nombre de paciente"
-                    {...register('nombre', {
-                      required: FormValidationTexts.requerido,
-                    })}
-                  />
-                  <FormErrorMessage>
-                    {errors.nombre && errors.nombre.message}
-                  </FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={errors.apellidos}>
-                  <FormLabel>Apellidos</FormLabel>
-                  <Input
-                    placeholder="Apellidos de paciente"
-                    {...register('apellidos', {
-                      required: FormValidationTexts.requerido,
-                    })}
-                  />
-                  <FormErrorMessage>
-                    {errors.apellidos && errors.apellidos.message}
-                  </FormErrorMessage>
-                </FormControl>
                 <BoxInfo />
               </Stack>
             </DrawerBody>
