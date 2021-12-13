@@ -138,7 +138,7 @@ export default function AgendarDrawer({
     //   fecha_nacimiento: displayFechaNacimiento ? values.fecha_nacimiento : null,
     // };
     const docData = {
-      title: paciente,
+      title: `Px. ${paciente.nombre} ${paciente.apellidos} | Dr. ${doctor.nombre} ${doctor.apellidos}`,
       start: fecha,
       end: moment(fecha).add(duracion, 'minutes').format(),
       extendedProps: {
@@ -291,7 +291,7 @@ export default function AgendarDrawer({
       >
         <DrawerOverlay />
         {isFechaValida ? (
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} autocomplete="off">
             <DrawerContent>
               <DrawerCloseButton />
               <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>

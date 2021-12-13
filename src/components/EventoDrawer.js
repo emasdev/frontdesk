@@ -218,7 +218,7 @@ export default function EventoDrawer({
             <>
               <Text>Doctor:</Text>
               <Text>
-                {!isSelectDoctorDisabled ? doctor.nombre : `-- Sin Doctor --`}
+                {!isSelectDoctorDisabled ? `${doctor.nombre} ${doctor.apellidos}` : `-- Sin Doctor --`}
               </Text>
             </>
           )}
@@ -324,14 +324,7 @@ export default function EventoDrawer({
               </Stack>
             </DrawerBody>
             <DrawerFooter borderTopWidth="1px">
-              <Button
-                mt={8}
-                colorScheme="teal"
-                isLoading={isSubmitting}
-                type="submit"
-              >
-                Actualizar
-              </Button>
+
             </DrawerFooter>
           </DrawerContent>
         </form>
