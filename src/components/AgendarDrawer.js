@@ -55,6 +55,7 @@ export default function AgendarDrawer({
   const [paciente, setPaciente] = useState(null);
   const [duracion, setDuracion] = useState(null);
   const [doctor, setDoctor] = useState(null);
+  const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
@@ -102,9 +103,8 @@ export default function AgendarDrawer({
       }
       setDoctor(null);
       setSelectEstudios(null);
-      setPaciente(null)
-
-
+      setPaciente(null);
+      setIsDone(false);
     }
   }, [isOpen]);
 
@@ -137,8 +137,11 @@ export default function AgendarDrawer({
     //   apellidos: values.apellidos,
     //   fecha_nacimiento: displayFechaNacimiento ? values.fecha_nacimiento : null,
     // };
+    const title = doctor
+      ? `Px. ${paciente.nombre} ${paciente.apellidos} | Dr. ${doctor.nombre} ${doctor.apellidos}`
+      : `Px. ${paciente.nombre} ${paciente.apellidos}`;
     const docData = {
-      title: `Px. ${paciente.nombre} ${paciente.apellidos} | Dr. ${doctor.nombre} ${doctor.apellidos}`,
+      title: title,
       start: fecha,
       end: moment(fecha).add(duracion, 'minutes').format(),
       extendedProps: {
@@ -150,7 +153,8 @@ export default function AgendarDrawer({
     };
     const doc = await db.createDocument('eventos', docData);
     loadEventos();
-    onClose();
+    setIsDone(true);
+    //onClose();
   };
 
   const handleIsSinDoctor = e => {
@@ -287,127 +291,145 @@ export default function AgendarDrawer({
         placement="right"
         onClose={onClose}
         size={'md'}
-      //initialFocusRef={firstField}
+        //initialFocusRef={firstField}
       >
         <DrawerOverlay />
-        {isFechaValida ? (
-          <form onSubmit={handleSubmit(onSubmit)} autocomplete="off">
-            <DrawerContent>
-              <DrawerCloseButton />
-              <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
-              <DrawerBody>
-                <Stack spacing="24px">
-                  <FormControl isInvalid={errors.nombre}>
-                    <FormLabel>Nombre</FormLabel>
-                    <Input
-                      placeholder="Nombre de paciente"
-                      {...register('nombre', {
-                        required: FormValidationTexts.requerido,
-                      })}
-                    //ref={firstField}
-                    />
-                    <FormErrorMessage>
-                      {errors.nombre && errors.nombre.message}
-                    </FormErrorMessage>
-                  </FormControl>
-
-                  <FormControl isInvalid={errors.apellidos}>
-                    <FormLabel>Apellidos</FormLabel>
-                    <Input
-                      placeholder="Apellidos de paciente"
-                      {...register('apellidos', {
-                        required: FormValidationTexts.requerido,
-                      })}
-                    />
-                    <FormErrorMessage>
-                      {errors.apellidos && errors.apellidos.message}
-                    </FormErrorMessage>
-                  </FormControl>
-
-                  {displayFechaNacimiento && (
-                    <FormControl isInvalid={errors.fecha_nacimiento}>
-                      <FormLabel>Fecha de Nacimiento</FormLabel>
+        {!isDone ? (
+          isFechaValida ? (
+            <form onSubmit={handleSubmit(onSubmit)} autocomplete="off">
+              <DrawerContent>
+                <DrawerCloseButton />
+                <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
+                <DrawerBody>
+                  <Stack spacing="24px">
+                    <FormControl isInvalid={errors.nombre}>
+                      <FormLabel>Nombre</FormLabel>
                       <Input
-                        type="date"
-                        {...register('fecha_nacimiento', {
+                        placeholder="Nombre de paciente"
+                        {...register('nombre', {
+                          required: FormValidationTexts.requerido,
+                        })}
+                        //ref={firstField}
+                      />
+                      <FormErrorMessage>
+                        {errors.nombre && errors.nombre.message}
+                      </FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid={errors.apellidos}>
+                      <FormLabel>Apellidos</FormLabel>
+                      <Input
+                        placeholder="Apellidos de paciente"
+                        {...register('apellidos', {
                           required: FormValidationTexts.requerido,
                         })}
                       />
                       <FormErrorMessage>
-                        {errors.fecha_nacimiento &&
-                          errors.fecha_nacimiento.message}
+                        {errors.apellidos && errors.apellidos.message}
                       </FormErrorMessage>
                     </FormControl>
-                  )}
 
-                  {displayFechaNacimiento && (
-                    <FormControl isInvalid={errors.estudios}>
-                      <FormLabel>Seleccionar Estudios</FormLabel>
+                    {displayFechaNacimiento && (
+                      <FormControl isInvalid={errors.fecha_nacimiento}>
+                        <FormLabel>Fecha de Nacimiento</FormLabel>
+                        <Input
+                          type="date"
+                          {...register('fecha_nacimiento', {
+                            required: FormValidationTexts.requerido,
+                          })}
+                        />
+                        <FormErrorMessage>
+                          {errors.fecha_nacimiento &&
+                            errors.fecha_nacimiento.message}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+
+                    {displayFechaNacimiento && (
+                      <FormControl isInvalid={errors.estudios}>
+                        <FormLabel>Seleccionar Estudios</FormLabel>
+                        <Select
+                          options={estudiosOptions}
+                          isMulti
+                          isClearable={true}
+                          isSearchable={true}
+                          placeholder="Seleccionar Estudio"
+                          onChange={handleSelectEstudios}
+                        />
+                        <FormErrorMessage>
+                          {errors.estudios && errors.estudios.message}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
+
+                    <FormControl>
+                      <SelectDuracion text={'Duracion de cita'} />
+                    </FormControl>
+
+                    <FormControl isInvalid={errors.doctor}>
+                      <FormLabel>Seleccionar Doctor</FormLabel>
                       <Select
-                        options={estudiosOptions}
-                        isMulti
+                        options={doctorOptions}
                         isClearable={true}
                         isSearchable={true}
-                        placeholder="Seleccionar Estudio"
-                        onChange={handleSelectEstudios}
+                        placeholder="Seleccionar Doctor"
+                        isDisabled={isSelectDoctorDisabled}
+                        onChange={handleSelectDoctor}
                       />
+                      <Flex mt={2}>
+                        <FormControl display="flex" alignItems="center">
+                          <FormLabel mb="0">Sin Doctor</FormLabel>
+                          <Switch onChange={handleIsSinDoctor} />
+                        </FormControl>
+                        <AgregarDoctorBtn />
+                      </Flex>
                       <FormErrorMessage>
-                        {errors.estudios && errors.estudios.message}
+                        {errors.doctor && errors.doctor.message}
                       </FormErrorMessage>
                     </FormControl>
-                  )}
-
-                  <FormControl>
-                    <SelectDuracion text={'Duracion de cita'} />
-                  </FormControl>
-
-                  <FormControl isInvalid={errors.doctor}>
-                    <FormLabel>Seleccionar Doctor</FormLabel>
-                    <Select
-                      options={doctorOptions}
-                      isClearable={true}
-                      isSearchable={true}
-                      placeholder="Seleccionar Doctor"
-                      isDisabled={isSelectDoctorDisabled}
-                      onChange={handleSelectDoctor}
-                    />
-                    <Flex mt={2}>
-                      <FormControl display="flex" alignItems="center">
-                        <FormLabel mb="0">Sin Doctor</FormLabel>
-                        <Switch onChange={handleIsSinDoctor} />
-                      </FormControl>
-                      <AgregarDoctorBtn />
-                    </Flex>
-                    <FormErrorMessage>
-                      {errors.doctor && errors.doctor.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                  <BoxInfo />
-                </Stack>
+                    <BoxInfo />
+                  </Stack>
+                </DrawerBody>
+                <DrawerFooter borderTopWidth="1px">
+                  <Button
+                    mt={8}
+                    colorScheme="teal"
+                    isLoading={isSubmitting}
+                    type="submit"
+                  >
+                    Registrar
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </form>
+          ) : (
+            <DrawerContent>
+              <DrawerCloseButton />
+              <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
+              <DrawerBody>
+                <Alert status="error">
+                  <AlertIcon />
+                  Este horario no es valido.
+                </Alert>
               </DrawerBody>
-              <DrawerFooter borderTopWidth="1px">
-                <Button
-                  mt={8}
-                  colorScheme="teal"
-                  isLoading={isSubmitting}
-                  type="submit"
-                >
-                  Agendar
-                </Button>
-              </DrawerFooter>
+              <DrawerFooter borderTopWidth="1px"></DrawerFooter>
             </DrawerContent>
-          </form>
+          )
         ) : (
           <DrawerContent>
             <DrawerCloseButton />
             <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
             <DrawerBody>
-              <Alert status="error">
+              <Alert status="info">
                 <AlertIcon />
-                Este horario no es valido.
+                Aqui se llevará el proceso de cobro
               </Alert>
             </DrawerBody>
-            <DrawerFooter borderTopWidth="1px"></DrawerFooter>
+            <DrawerFooter borderTopWidth="1px">
+              <Button mt={8} colorScheme="teal" onClick={() => onClose()}>
+                Finalizar
+              </Button>
+            </DrawerFooter>
           </DrawerContent>
         )}
       </Drawer>

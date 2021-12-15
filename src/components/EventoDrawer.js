@@ -24,6 +24,7 @@ import {
   SimpleGrid,
   UnorderedList,
   ListItem,
+  ButtonGroup,
 } from '@chakra-ui/react';
 import Select from 'react-select';
 import FormValidationTexts from '../helpers/FormValidationTexts';
@@ -218,7 +219,9 @@ export default function EventoDrawer({
             <>
               <Text>Doctor:</Text>
               <Text>
-                {!isSelectDoctorDisabled ? `${doctor.nombre} ${doctor.apellidos}` : `-- Sin Doctor --`}
+                {!isSelectDoctorDisabled
+                  ? `${doctor.nombre} ${doctor.apellidos}`
+                  : `-- Sin Doctor --`}
               </Text>
             </>
           )}
@@ -324,7 +327,11 @@ export default function EventoDrawer({
               </Stack>
             </DrawerBody>
             <DrawerFooter borderTopWidth="1px">
-
+              <ButtonGroup>
+                <Button>Llegó paciente</Button>
+                <Button>Cancelar cita</Button>
+                <Button>Reagendar cita</Button>
+              </ButtonGroup>
             </DrawerFooter>
           </DrawerContent>
         </form>
