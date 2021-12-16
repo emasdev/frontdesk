@@ -21,6 +21,7 @@ import AgendarDrawer from './AgendarDrawer';
 import moment from 'moment/min/moment-with-locales';
 import '../css/calendar.css';
 import { ListItem, UnorderedList } from '@chakra-ui/react';
+import { doc } from 'firebase/firestore';
 
 export default function Agenda() {
   moment.locale('es');
@@ -51,13 +52,13 @@ export default function Agenda() {
       if (moment(arg.date).isBefore(moment().format())) {
         alert('Elegir una fecha y horario valido');
       } else {
-        console.log(eventoReagendar);
-        await db.updateDocument('eventos', eventoReagendar.id, {
-          start: moment(arg.date).format(),
-          end: moment(arg.date)
-            .add(eventoReagendar.extendedProps.duracion, 'minutes')
-            .format(),
-        });
+        const docData = { ...eventoReagendar };
+        docData.start = moment(arg.date).format();
+        docData.end = moment(arg.date)
+          .add(eventoReagendar.extendedProps.duracion, 'minutes')
+          .format();
+
+        await db.updateDocument('eventos', eventoReagendar.id, docData);
         setEventoReagendar(null);
         setEvento(null);
         loadEventos();

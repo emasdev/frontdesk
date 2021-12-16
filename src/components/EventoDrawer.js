@@ -59,6 +59,7 @@ export default function EventoDrawer({
   const [duracion, setDuracion] = useState(null);
   const [doctor, setDoctor] = useState(null);
   const [isAlertaBorrar, setIsAlertaBorrar] = useState(false);
+  const [isLlegoPaciente, setIsLlegoPaciente] = useState(false);
 
   //const [selectedDoctor, setSelectedDoctor] = useState(null);
   //const [selectedEstudios, setSelectedEstudios] = useState(null);
@@ -80,14 +81,6 @@ export default function EventoDrawer({
       setFecha(moment(evento.start).format());
       setDoctor(evento.extendedProps.doctor);
       setIsAlertaBorrar(false);
-      //setSelectedDoctor(getSelectedDoctor());
-      //setSelectedEstudios(getSelectedEstudios());
-
-      //console.log(es);
-      //setSelectedEstudios(es);
-      //console.log(estudiosOptions);
-      // setSelectedEstudios(getSelectedEstudios());
-      //setDuracion(moment(evento.start).diff(moment(evento.end), 'minutes'));
       setValue('nombre', evento.extendedProps.paciente.nombre);
       setValue('apellidos', evento.extendedProps.paciente.apellidos);
       setValue('duracion', evento.extendedProps.paciente.duracion);
@@ -332,7 +325,12 @@ export default function EventoDrawer({
             </DrawerBody>
             <DrawerFooter borderTopWidth="1px">
               <ButtonGroup>
-                <Button colorScheme={'teal'}>Llegó paciente</Button>
+                <Button
+                  colorScheme={'teal'}
+                  onClick={() => setIsLlegoPaciente(true)}
+                >
+                  Llegó paciente
+                </Button>
               </ButtonGroup>
             </DrawerFooter>
           </DrawerContent>
