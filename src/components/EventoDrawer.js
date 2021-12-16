@@ -25,11 +25,14 @@ import {
   UnorderedList,
   ListItem,
   ButtonGroup,
+  Alert,
+  AlertIcon,
 } from '@chakra-ui/react';
 import Select from 'react-select';
 import FormValidationTexts from '../helpers/FormValidationTexts';
 import db from '../helpers/FirestoreService';
 import AppContext from '../context/AppContext';
+import NavContext from '../context/NavContext';
 import AgregarDoctorBtn from './AgregarDoctorBtn';
 
 export default function EventoDrawer({
@@ -39,7 +42,8 @@ export default function EventoDrawer({
   evento,
   title,
 }) {
-  const { usuarios, loadEventos, catalogo } = useContext(AppContext);
+  const { usuarios, loadEventos, catalogo, setEvento } = useContext(AppContext);
+  const { setSection } = useContext(NavContext);
   moment.locale('es');
   const {
     register,
@@ -54,6 +58,7 @@ export default function EventoDrawer({
   const [paciente, setPaciente] = useState();
   const [duracion, setDuracion] = useState(null);
   const [doctor, setDoctor] = useState(null);
+  const [isAlertaBorrar, setIsAlertaBorrar] = useState(false);
 
   //const [selectedDoctor, setSelectedDoctor] = useState(null);
   //const [selectedEstudios, setSelectedEstudios] = useState(null);
@@ -74,6 +79,7 @@ export default function EventoDrawer({
       setDuracion(evento.extendedProps.duracion);
       setFecha(moment(evento.start).format());
       setDoctor(evento.extendedProps.doctor);
+      setIsAlertaBorrar(false);
       //setSelectedDoctor(getSelectedDoctor());
       //setSelectedEstudios(getSelectedEstudios());
 
@@ -90,43 +96,10 @@ export default function EventoDrawer({
 
   const [isSelectDoctorDisabled, setIsSelectDoctorDisabled] = useState(false);
   const [selectEstudios, setSelectEstudios] = useState(null);
-  const [isHorarioSelectable, setIsHorarioSelectable] = useState(true);
   const [fecha, setFecha] = useState(moment().format());
-  const [selectHorario, setSelectHorario] = useState({
-    horas: null,
-    minutos: null,
-  });
 
   const [doctorOptions, setDoctorOptions] = useState(null);
   const [estudiosOptions, setEstudiosOptions] = useState(null);
-
-  const handleIsHorarioSelectable = e => {
-    setIsHorarioSelectable(e.target.checked);
-  };
-
-  const handleHoras = e => {
-    setSelectHorario({ ...selectHorario, horas: e.value });
-  };
-
-  const handleMinutos = e => {
-    setSelectHorario({ ...selectHorario, minutos: e.value });
-  };
-
-  const horasOptions = Array(9)
-    .fill(0)
-    .map((e, i) => {
-      const value = i + 9;
-      const label = i + 9;
-      return { value, label };
-    });
-
-  const minutosOptions = Array(4)
-    .fill(0)
-    .map((e, i) => {
-      const value = i * 15;
-      const label = i * 15;
-      return { value, label };
-    });
 
   useEffect(() => {
     if (!usuarios) return;
@@ -158,9 +131,15 @@ export default function EventoDrawer({
     onClose();
   };
 
-  const handleOpen = async () => {
-    await onOpen();
-    setFocus('nombre');
+  const handleCancelarCita = async () => {
+    await db.deleteDocument('eventos', evento.id);
+    loadEventos();
+    onClose();
+  };
+
+  const handleReagendarCita = () => {
+    setEvento(evento);
+    setSection('Agenda');
   };
 
   const handleIsSinDoctor = e => {
@@ -324,13 +303,36 @@ export default function EventoDrawer({
             <DrawerBody>
               <Stack spacing="24px">
                 <BoxInfo />
+                {!isAlertaBorrar ? (
+                  <Flex justifyContent="space-between">
+                    <Button onClick={() => setIsAlertaBorrar(true)}>
+                      Cancelar cita
+                    </Button>
+                    <Button onClick={handleReagendarCita}>
+                      Reagendar cita
+                    </Button>
+                  </Flex>
+                ) : (
+                  <Flex justifyContent="space-between" direction={'column'}>
+                    <Alert status="error">
+                      <AlertIcon />
+                      ¿Estas seguro de querer cancelar la cita? Esta acción es
+                      irreversible
+                    </Alert>
+                    <Button
+                      colorScheme={'red'}
+                      onClick={handleCancelarCita}
+                      mt={2}
+                    >
+                      Cancelar cita
+                    </Button>
+                  </Flex>
+                )}
               </Stack>
             </DrawerBody>
             <DrawerFooter borderTopWidth="1px">
               <ButtonGroup>
-                <Button>Llegó paciente</Button>
-                <Button>Cancelar cita</Button>
-                <Button>Reagendar cita</Button>
+                <Button colorScheme={'teal'}>Llegó paciente</Button>
               </ButtonGroup>
             </DrawerFooter>
           </DrawerContent>

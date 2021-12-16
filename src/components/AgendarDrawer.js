@@ -296,7 +296,7 @@ export default function AgendarDrawer({
         <DrawerOverlay />
         {!isDone ? (
           isFechaValida ? (
-            <form onSubmit={handleSubmit(onSubmit)} autocomplete="off">
+            <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
               <DrawerContent>
                 <DrawerCloseButton />
                 <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>

@@ -6,6 +6,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 
 const db = firebase.db;
@@ -16,6 +17,10 @@ const createDocument = (collectionName, docData) => {
 
 const updateDocument = (collectionName, id, docData) => {
   return setDoc(doc(db, collectionName, id), docData);
+};
+
+const deleteDocument = (collectionName, id) => {
+  return deleteDoc(doc(db, collectionName, id));
 };
 
 const readDocuments = async collectionName => {
@@ -54,6 +59,7 @@ const FirestoreService = {
   readDocuments,
   readDocument,
   updateDocument,
+  deleteDocument,
 };
 
 export default FirestoreService;

@@ -1,34 +1,74 @@
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState, useRef, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react'; // must go before plugins
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin!
 import interactionPlugin from '@fullcalendar/interaction'; // needed for dayClick
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
+import db from '../helpers/FirestoreService';
 import AppContext from '../context/AppContext';
-import { Text, useDisclosure, Flex, SimpleGrid, Box } from '@chakra-ui/react';
+import {
+  Text,
+  useDisclosure,
+  Flex,
+  SimpleGrid,
+  Box,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  Button,
+} from '@chakra-ui/react';
 import AgendarDrawer from './AgendarDrawer';
 import moment from 'moment/min/moment-with-locales';
 import '../css/calendar.css';
+import { ListItem, UnorderedList } from '@chakra-ui/react';
 
 export default function Agenda() {
   moment.locale('es');
-  const { eventos } = useContext(AppContext);
+  const { eventos, evento, setEvento, loadEventos } = useContext(AppContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [eventoSeleccionado, setEventoSeleccionado] = useState({});
+  const [eventoReagendar, setEventoReagendar] = useState(null);
   const [fecha, setFecha] = useState(null);
 
   const calendario = useRef();
 
-  const handleDateClick = arg => {
+  useEffect(() => {
+    console.log('evento');
+    console.log(evento);
+    if (evento) {
+      setEventoReagendar(evento);
+    } else {
+      setEventoReagendar(null);
+    }
+  }, [evento]);
+
+  const handleDateClick = async arg => {
     if (arg.view.type === 'dayGridMonth') {
       return;
     }
 
-    const evento = {
-      start: arg.date,
-    };
-    setEventoSeleccionado(evento);
-    onOpen();
+    if (eventoReagendar) {
+      if (moment(arg.date).isBefore(moment().format())) {
+        alert('Elegir una fecha y horario valido');
+      } else {
+        console.log(eventoReagendar);
+        await db.updateDocument('eventos', eventoReagendar.id, {
+          start: moment(arg.date).format(),
+          end: moment(arg.date)
+            .add(eventoReagendar.extendedProps.duracion, 'minutes')
+            .format(),
+        });
+        setEventoReagendar(null);
+        setEvento(null);
+        loadEventos();
+      }
+    } else {
+      const evento = {
+        start: arg.date,
+      };
+      setEventoSeleccionado(evento);
+      onOpen();
+    }
   };
 
   const handleFecha = fecha => {
@@ -38,9 +78,69 @@ export default function Agenda() {
     //calendario.current.goToDate(fecha);
   };
 
+  const BoxInfo = () => {
+    //console.log(paciente);
+    return (
+      <Box border="2px" borderColor="gray.400" borderRadius={5} p={3}>
+        <SimpleGrid columns={2} spacing={3}>
+          <Text>Paciente:</Text>
+          <Text>
+            {eventoReagendar.extendedProps.paciente.nombre}{' '}
+            {eventoReagendar.extendedProps.paciente.apellidos}
+          </Text>
+
+          <Text>Estudios:</Text>
+          <UnorderedList>
+            {eventoReagendar.extendedProps.estudios.map((estudio, index) => {
+              return <ListItem key={index}>{estudio.nombre}</ListItem>;
+            })}
+          </UnorderedList>
+
+          <Text>Duracion:</Text>
+          <Text>{eventoReagendar.extendedProps.duracion} minutos</Text>
+
+          <Text>Fecha:</Text>
+          <Text>{moment(eventoReagendar.start).format('LLLL')}</Text>
+
+          <Text>Doctor:</Text>
+          <Text>
+            {eventoReagendar.extendedProps.doctor
+              ? `${eventoReagendar.extendedProps.doctor.nombre} ${eventoReagendar.extendedProps.doctor.apellidos}`
+              : `-- Sin Doctor --`}
+          </Text>
+        </SimpleGrid>
+      </Box>
+    );
+  };
+
   return (
     <>
-      <Text>Para agendar una cita seleccione un horario</Text>
+      <Box>
+        {eventoReagendar ? (
+          <Alert
+            status="warning"
+            variant="subtle"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+          >
+            <AlertTitle mt={4} mb={1} fontSize="lg">
+              Seleccionar día y hora para reagendar la cita seleccionada
+            </AlertTitle>
+            <AlertDescription maxWidth="sm">
+              {console.log(eventoReagendar)}
+              <BoxInfo />
+              <Button mt={2} onClick={() => setEventoReagendar(null)}>
+                Cancelar
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <Text>Para agendar una cita seleccione un horario</Text>
+        )}
+      </Box>
+
       <Flex bgColor="gray.100" justifyContent="space-around" h="100%">
         <Box w="100%">
           <FullCalendar
@@ -67,7 +167,6 @@ export default function Agenda() {
             }}
           />
         </Box>
-
 
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}

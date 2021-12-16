@@ -42,6 +42,7 @@ export default function Main() {
   const [doctores, setDoctores] = useState();
   const [usuarios, setUsuarios] = useState();
   const [eventos, setEventos] = useState();
+  const [evento, setEvento] = useState();
 
   const [catalogo, setCatalogo] = useState({
     estudios: [],
@@ -101,6 +102,8 @@ export default function Main() {
     catalogo,
     setCatalogo,
     loadCatalogo,
+    evento,
+    setEvento,
   };
 
   return (
