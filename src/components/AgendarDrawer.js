@@ -105,6 +105,7 @@ export default function AgendarDrawer({
       setSelectEstudios(null);
       setPaciente(null);
       setIsDone(false);
+
     }
   }, [isOpen]);
 
@@ -217,7 +218,7 @@ export default function AgendarDrawer({
               <Text>
                 {!isSelectDoctorDisabled
                   ? `${doctor.nombre} ${doctor.apellidos}`
-                  : `-- Sin Doctor --`}
+                  : `A Quien Corresponda`}
               </Text>
             </>
           )}
@@ -291,7 +292,7 @@ export default function AgendarDrawer({
         placement="right"
         onClose={onClose}
         size={'md'}
-        //initialFocusRef={firstField}
+      //initialFocusRef={firstField}
       >
         <DrawerOverlay />
         {!isDone ? (
@@ -309,7 +310,7 @@ export default function AgendarDrawer({
                         {...register('nombre', {
                           required: FormValidationTexts.requerido,
                         })}
-                        //ref={firstField}
+                      //ref={firstField}
                       />
                       <FormErrorMessage>
                         {errors.nombre && errors.nombre.message}
@@ -397,7 +398,7 @@ export default function AgendarDrawer({
                     isLoading={isSubmitting}
                     type="submit"
                   >
-                    Registrar
+                    Agendar
                   </Button>
                 </DrawerFooter>
               </DrawerContent>

@@ -34,6 +34,13 @@ export default function Agenda() {
   const calendario = useRef();
 
   useEffect(() => {
+    return () => {
+      setEventoReagendar(null);
+      setEvento(null);
+    }
+  }, [])
+
+  useEffect(() => {
     console.log('evento');
     console.log(evento);
     if (evento) {
@@ -42,6 +49,11 @@ export default function Agenda() {
       setEventoReagendar(null);
     }
   }, [evento]);
+
+  const handleCancelar = () => {
+    setEventoReagendar(null);
+    setEvento(null);
+  }
 
   const handleDateClick = async arg => {
     if (arg.view.type === 'dayGridMonth') {
@@ -107,7 +119,7 @@ export default function Agenda() {
           <Text>
             {eventoReagendar.extendedProps.doctor
               ? `${eventoReagendar.extendedProps.doctor.nombre} ${eventoReagendar.extendedProps.doctor.apellidos}`
-              : `-- Sin Doctor --`}
+              : `A Quien Corresponda`}
           </Text>
         </SimpleGrid>
       </Box>
@@ -132,7 +144,7 @@ export default function Agenda() {
             <AlertDescription maxWidth="sm">
               {console.log(eventoReagendar)}
               <BoxInfo />
-              <Button mt={2} onClick={() => setEventoReagendar(null)}>
+              <Button mt={2} onClick={handleCancelar}>
                 Cancelar
               </Button>
             </AlertDescription>

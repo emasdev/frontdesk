@@ -59,7 +59,7 @@ export default function AgendarDoctor() {
               required: FormValidationTexts.requerido,
             })}
           >
-            <option>-- Sin Doctor --</option>
+            <option>A Quien Corresponda</option>
             {usuarios &&
               usuarios.map(usuario => {
                 const value = JSON.stringify(usuario);
