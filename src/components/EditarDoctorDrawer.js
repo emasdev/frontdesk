@@ -35,7 +35,7 @@ export default function EditarDoctorDrawer({
   onOpen,
   onClose,
 }) {
-  const { loadUsuarios } = useContext(AppContext);
+  const { loadUsuarios, catalogo } = useContext(AppContext);
   const {
     register,
     handleSubmit,
@@ -49,6 +49,7 @@ export default function EditarDoctorDrawer({
       nombre: values.nombre,
       apellidos: values.apellidos,
       tel: values.tel,
+      lista_precios: values.lista_precios,
     };
     const doc = await db.updateDocument('usuarios', doctor.id, docData);
     loadUsuarios();
@@ -65,6 +66,7 @@ export default function EditarDoctorDrawer({
       setValue('nombre', doctor.nombre);
       setValue('apellidos', doctor.apellidos);
       setValue('tel', doctor.tel);
+      setValue('lista_precios', doctor.lista_precios);
     }
   }, [doctor]);
 
@@ -118,6 +120,23 @@ export default function EditarDoctorDrawer({
                   <FormErrorMessage>
                     {errors.tel && errors.tel.message}
                   </FormErrorMessage>
+                </FormControl>
+                <FormControl>
+                  <Select
+                    placeholder="Seleccionar lista de precios"
+                    {...register('lista_precios', {
+                      required: FormValidationTexts.requerido,
+                    })}
+                  >
+                    {catalogo.listas_precios &&
+                      catalogo.listas_precios.map(lista => {
+                        return (
+                          <option key={lista.id} value={lista.id}>
+                            {lista.titulo}
+                          </option>
+                        );
+                      })}
+                  </Select>
                 </FormControl>
               </Stack>
             </DrawerBody>

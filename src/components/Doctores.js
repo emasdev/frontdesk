@@ -14,8 +14,8 @@ import AgregarDoctorBtn from './AgregarDoctorBtn';
 import AppContext from '../context/AppContext';
 import EditarDoctorDrawer from './EditarDoctorDrawer';
 
-export default function  Doctores() {
-  const { usuarios } = useContext(AppContext);
+export default function Doctores() {
+  const { usuarios, catalogo } = useContext(AppContext);
   const [selected, setSelected] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -34,6 +34,7 @@ export default function  Doctores() {
             <Th>Apellidos</Th>
             <Th>Teléfono</Th>
             <Th>Dirección</Th>
+            <Th>Lista de Precios</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -45,6 +46,13 @@ export default function  Doctores() {
                   <Td>{usuario.apellidos}</Td>
                   <Td>{usuario.tel}</Td>
                   <Td>{usuario.dir_consultorio && usuario.dir_consultorio}</Td>
+                  <Td>
+                    {catalogo.listas_precios.map(element => {
+                      if (element.id === usuario.lista_precios) {
+                        return element.titulo;
+                      }
+                    })}
+                  </Td>
                 </Tr>
               );
             })}

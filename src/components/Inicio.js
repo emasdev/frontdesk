@@ -17,7 +17,6 @@ export default function Inicio() {
       <Stack direction="row" mb={4}>
         <Button onClick={onOpen}>{drawerTitle}</Button>
         <Button onClick={() => setSection('Agenda')}>Agendar cita</Button>
-        <Button>Llego paciente agendado</Button>
       </Stack>
 
       <Eventos />

@@ -26,6 +26,9 @@ import {
   ListItem,
   Alert,
   AlertIcon,
+  Radio,
+  InputGroup,
+  InputLeftAddon,
 } from '@chakra-ui/react';
 import Select from 'react-select';
 import FormValidationTexts from '../helpers/FormValidationTexts';
@@ -49,7 +52,8 @@ export default function AgendarDrawer({
     setFocus,
     setError,
     watch,
-    formState: { errors, isSubmitting },
+    trigger,
+    formState: { errors, isSubmitting, isValid },
   } = useForm();
 
   const [paciente, setPaciente] = useState(null);
@@ -77,6 +81,10 @@ export default function AgendarDrawer({
   const [doctorOptions, setDoctorOptions] = useState(null);
   const [estudiosOptions, setEstudiosOptions] = useState(null);
   const [isFechaValida, setIsFechaValida] = useState(null);
+  const [formaPago, setFormaPago] = useState('Efectivo');
+  const [pagoEfectivo, setPagoEfectivo] = useState(null);
+  const [pagoTarjeta, setPagoTarjeta] = useState(null);
+  const [tipoTarjeta, setTipoTarjeta] = useState(null);
 
   useEffect(() => {
     if (evento) {
@@ -105,6 +113,10 @@ export default function AgendarDrawer({
       setSelectEstudios(null);
       setPaciente(null);
       setIsDone(false);
+      setFormaPago('Efectivo');
+      setPagoEfectivo(null);
+      setPagoTarjeta(null);
+      setTipoTarjeta(null);
     }
   }, [isOpen]);
 
@@ -131,6 +143,11 @@ export default function AgendarDrawer({
 
   //console.log(errors);
 
+  const onNext = () => {
+    trigger();
+    setIsDone(isValid);
+  };
+
   const onSubmit = async values => {
     // let paciente = {
     //   nombre: values.nombre,
@@ -140,6 +157,14 @@ export default function AgendarDrawer({
     const title = doctor
       ? `Px. ${paciente.nombre} ${paciente.apellidos} | Dr. ${doctor.nombre} ${doctor.apellidos}`
       : `Px. ${paciente.nombre} ${paciente.apellidos}`;
+
+    const pago = {
+      formaPago,
+      pagoEfectivo,
+      pagoTarjeta,
+      tipoTarjeta,
+    };
+
     const docData = {
       title: title,
       start: fecha,
@@ -149,8 +174,10 @@ export default function AgendarDrawer({
         doctor: doctor,
         estudios: selectEstudios,
         duracion: duracion,
+        pago,
       },
     };
+    debugger;
     const doc = await db.createDocument('eventos', docData);
     loadEventos();
     setIsDone(true);
@@ -293,10 +320,10 @@ export default function AgendarDrawer({
         size={'md'}
         //initialFocusRef={firstField}
       >
-        <DrawerOverlay />
-        {!isDone ? (
-          isFechaValida ? (
-            <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+        <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
+          <DrawerOverlay />
+          {!isDone ? (
+            isFechaValida ? (
               <DrawerContent>
                 <DrawerCloseButton />
                 <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
@@ -391,47 +418,97 @@ export default function AgendarDrawer({
                   </Stack>
                 </DrawerBody>
                 <DrawerFooter borderTopWidth="1px">
-                  <Button
-                    mt={8}
-                    colorScheme="teal"
-                    isLoading={isSubmitting}
-                    type="submit"
-                  >
-                    Registrar
-                  </Button>
+                  <Box as={Button} mt={8} colorScheme="teal" onClick={onNext}>
+                    Registrar Pago
+                  </Box>
                 </DrawerFooter>
               </DrawerContent>
-            </form>
+            ) : (
+              <DrawerContent>
+                <DrawerCloseButton />
+                <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
+                <DrawerBody>
+                  <Alert status="error">
+                    <AlertIcon />
+                    Este horario no es valido.
+                  </Alert>
+                </DrawerBody>
+                <DrawerFooter borderTopWidth="1px"></DrawerFooter>
+              </DrawerContent>
+            )
           ) : (
             <DrawerContent>
               <DrawerCloseButton />
-              <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
+              <DrawerHeader borderBottomWidth="1px">
+                Registrar Cobro
+              </DrawerHeader>
               <DrawerBody>
-                <Alert status="error">
-                  <AlertIcon />
-                  Este horario no es valido.
-                </Alert>
-              </DrawerBody>
-              <DrawerFooter borderTopWidth="1px"></DrawerFooter>
-            </DrawerContent>
-          )
-        ) : (
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader borderBottomWidth="1px">{title}</DrawerHeader>
-            <DrawerBody>
-              <Alert status="info">
+                {/* <Alert status="info">
                 <AlertIcon />
                 Aqui se llevará el proceso de cobro
-              </Alert>
-            </DrawerBody>
-            <DrawerFooter borderTopWidth="1px">
-              <Button mt={8} colorScheme="teal" onClick={() => onClose()}>
-                Finalizar
-              </Button>
-            </DrawerFooter>
-          </DrawerContent>
-        )}
+              </Alert> */}
+
+                <Stack spacing="24px">
+                  <Flex justifyContent="space-between">
+                    <FormLabel>Forma de pago</FormLabel>
+                    <RadioGroup onChange={setFormaPago} value={formaPago}>
+                      <Stack direction="row">
+                        <Radio value="Efectivo">Efectivo</Radio>
+                        <Radio value="Tarjeta">Tarjeta</Radio>
+                        <Radio value="Mixto">Mixto</Radio>
+                      </Stack>
+                    </RadioGroup>
+                  </Flex>
+
+                  {(formaPago === 'Efectivo' || formaPago === 'Mixto') && (
+                    <FormControl>
+                      <FormLabel>Efectivo</FormLabel>
+                      <InputGroup>
+                        <InputLeftAddon children="$" />
+                        <Input
+                          placeholder="0.00"
+                          onChange={event =>
+                            setPagoEfectivo(event.target.value)
+                          }
+                          //ref={firstField}
+                        />
+                      </InputGroup>
+                    </FormControl>
+                  )}
+                  {(formaPago === 'Tarjeta' || formaPago === 'Mixto') && (
+                    <FormControl>
+                      <FormLabel>Tarjeta</FormLabel>
+                      <InputGroup>
+                        <InputLeftAddon children="$" />
+                        <Input
+                          placeholder="0.00"
+                          onChange={event => setPagoTarjeta(event.target.value)}
+                          //ref={firstField}
+                        />
+                      </InputGroup>
+                      <RadioGroup onChange={setTipoTarjeta} value={tipoTarjeta}>
+                        <Stack direction="row">
+                          <Radio value="Crédito">Crédito</Radio>
+                          <Radio value="Débito">Débito</Radio>
+                        </Stack>
+                      </RadioGroup>
+                    </FormControl>
+                  )}
+                </Stack>
+              </DrawerBody>
+              <DrawerFooter borderTopWidth="1px">
+                <Button
+                  mt={8}
+                  colorScheme="teal"
+                  isLoading={isSubmitting}
+                  type="submit"
+                >
+                  Registrar
+                </Button>
+              </DrawerFooter>
+            </DrawerContent>
+          )}
+        </form>
       </Drawer>
     </>
   );
