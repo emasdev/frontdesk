@@ -209,7 +209,7 @@ export default function AgendarDrawer({
               <Text>
                 {!isSelectDoctorDisabled
                   ? `${doctor.nombre} ${doctor.apellidos}`
-                  : `-- Sin Doctor --`}
+                  : `A Quien Corresponda`}
               </Text>
             </>
           )}

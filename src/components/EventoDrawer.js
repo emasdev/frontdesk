@@ -84,6 +84,7 @@ export default function EventoDrawer({
       setValue('nombre', evento.extendedProps.paciente.nombre);
       setValue('apellidos', evento.extendedProps.paciente.apellidos);
       setValue('duracion', evento.extendedProps.paciente.duracion);
+      setIsAlertaBorrar(false);
     }
   }, [evento]);
 
@@ -193,7 +194,7 @@ export default function EventoDrawer({
               <Text>
                 {!isSelectDoctorDisabled
                   ? `${doctor.nombre} ${doctor.apellidos}`
-                  : `-- Sin Doctor --`}
+                  : `A Quien Corresponda`}
               </Text>
             </>
           )}

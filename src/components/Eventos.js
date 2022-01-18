@@ -79,7 +79,7 @@ export default function Eventos() {
             eventosPorDia.map(evento => {
               const horario = moment(evento.start).format('HH:mm');
               const nombrePaciente = `${evento.extendedProps.paciente.nombre} ${evento.extendedProps.paciente.apellidos}`;
-              let doctor = '- Sin Doctor -';
+              let doctor = 'A Quien Corresponda';
               if (evento.extendedProps.doctor) {
                 doctor = `${evento.extendedProps.doctor.nombre} ${evento.extendedProps.doctor.apellidos}`;
               }
